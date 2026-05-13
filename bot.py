@@ -260,9 +260,51 @@ def run_test_push():
     print(f"[TEST] Telegram-Versand: {status}")
 
 
+# ── Ein Poll-Zyklus ────────────────────────────────────────────────────────────
+def run_check(current, last_uids, cache):
+    """Vergleicht aktuellen Stand mit last_uids, pusht bei Treffern.
+    Gibt aktuelle UID-Menge zurück."""
+    ts = datetime.now(MUNICH_TZ).strftime("%H:%M:%S")
+    current_uids = set(current.keys())
+    appeared = current_uids - last_uids
+
+    if not appeared:
+        print(f"[{ts}] Keine Änderung — {len(current_uids)} Schichten aktiv.")
+    else:
+        print(f"[{ts}] {len(appeared)} neue Schicht(en): {appeared}")
+        for uid in appeared:
+            cached = cache.get(uid)
+            if cached is None:
+                shift_obj = current.get(uid, {})
+                cached = {
+                    "uid": uid,
+                    "name": shift_obj.get("name", uid),
+                    "date": shift_obj.get("date", "")[:10],
+                    "areas": [],
+                    "earliest_start": None,
+                }
+                print(f"  ! UID {uid} nicht im Cache — kein Zeitfilter möglich, Push wird unterdrückt.")
+                print(f"    Bitte crawl_definitions.py erneut ausführen um den Cache zu aktualisieren.")
+                continue
+
+            clf = classify(cached.get("earliest_start"))
+            if clf:
+                msg = format_push(cached, clf)
+                print(f"  → Push [{clf}]: {cached['name']}")
+                telegram_send(msg)
+            else:
+                start_str = cached.get("earliest_start", "?")
+                print(f"  → Kein Push (Filter): {cached['name']} "
+                      f"[Start: {to_munich(start_str).strftime('%H:%M') if to_munich(start_str) else '?'} Uhr]")
+
+    state_save(current_uids)
+    return current_uids
+
+
 # ── Haupt-Loop ─────────────────────────────────────────────────────────────────
 def main():
     test_mode = "--test" in sys.argv
+    once_mode = "--once" in sys.argv
 
     if not os.path.exists(CACHE_FILE):
         print(f"Fehler: {CACHE_FILE} nicht gefunden.")
@@ -289,6 +331,10 @@ def main():
         state_save(last_uids)
         print(f"State gespeichert: {len(last_uids)} Schichten.")
 
+    if once_mode:
+        run_check(current, last_uids, cache)
+        return
+
     print(f"Polling-Intervall: {POLL_INTERVAL} s. Strg+C zum Beenden.\n")
 
     while True:
@@ -301,41 +347,7 @@ def main():
             print(f"[{ts}] API-Fehler: {e}")
             continue
 
-        current_uids = set(current.keys())
-        appeared = current_uids - last_uids
-
-        if not appeared:
-            print(f"[{ts}] Keine Änderung — {len(current_uids)} Schichten aktiv.")
-        else:
-            print(f"[{ts}] {len(appeared)} neue Schicht(en): {appeared}")
-            for uid in appeared:
-                cached = cache.get(uid)
-                if cached is None:
-                    # Schicht nicht im Cache → eigene Zeitinfo fehlt, trotzdem prüfen
-                    shift_obj = current.get(uid, {})
-                    cached = {
-                        "uid": uid,
-                        "name": shift_obj.get("name", uid),
-                        "date": shift_obj.get("date", "")[:10],
-                        "areas": [],
-                        "earliest_start": None,
-                    }
-                    print(f"  ! UID {uid} nicht im Cache — kein Zeitfilter möglich, Push wird unterdrückt.")
-                    print(f"    Bitte crawl_definitions.py erneut ausführen um den Cache zu aktualisieren.")
-                    continue
-
-                clf = classify(cached.get("earliest_start"))
-                if clf:
-                    msg = format_push(cached, clf)
-                    print(f"  → Push [{clf}]: {cached['name']}")
-                    telegram_send(msg)
-                else:
-                    start_str = cached.get("earliest_start", "?")
-                    print(f"  → Kein Push (Filter): {cached['name']} "
-                          f"[Start: {to_munich(start_str).strftime('%H:%M') if to_munich(start_str) else '?'} Uhr]")
-
-        state_save(current_uids)
-        last_uids = current_uids
+        last_uids = run_check(current, last_uids, cache)
 
 
 if __name__ == "__main__":
