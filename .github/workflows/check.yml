@@ -1,0 +1,44 @@
+name: Wiesn-Bot Check
+
+on:
+  schedule:
+    # Alle 3 Stunden zwischen 5:00 und 20:00 UTC = 7:00-22:00 München (CEST UTC+2)
+    - cron: '0 5,8,11,14,17,20 * * *'
+  workflow_dispatch:  # manueller Trigger via UI
+
+jobs:
+  check-availability:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore state from previous run
+        uses: actions/download-artifact@v4
+        with:
+          name: bot-state
+          path: .
+        continue-on-error: true  # erster Lauf hat noch kein Artifact
+
+      - name: Run bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 bot.py
+
+      - name: Save state for next run
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bot-state
+          path: state.json
+          retention-days: 7
+          overwrite: true
