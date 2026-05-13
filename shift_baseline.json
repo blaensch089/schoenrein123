@@ -1,0 +1,321 @@
+{
+  "meta": {
+    "curTime": "2026-05-13T10:48:05+00:00"
+  },
+  "pagination": {
+    "total": 22,
+    "current": 1,
+    "perPage": 100,
+    "pages": 1
+  },
+  "data": [
+    {
+      "name": "1. Montag, 21.09.2026 - Mittag",
+      "date": "2026-09-21T00:00:00+00:00",
+      "uid": "NXUZF4B",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Montag, 21.09.2026 - Nachmittag",
+      "date": "2026-09-21T00:00:00+00:00",
+      "uid": "D4V8NMG",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Dienstag, 22.09.2026 - Mittag",
+      "date": "2026-09-22T00:00:00+00:00",
+      "uid": "PUUH5QK",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Dienstag, 22.09.2026 - Nachmittag",
+      "date": "2026-09-22T00:00:00+00:00",
+      "uid": "M7U2N61",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Mittwoch, 23.09.2026 - Mittag",
+      "date": "2026-09-23T00:00:00+00:00",
+      "uid": "FLP55A4",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Mittwoch, 23.09.2026 - Nachmittag",
+      "date": "2026-09-23T00:00:00+00:00",
+      "uid": "GGFESMA",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Donnerstag, 24.09.2026 - Mittag",
+      "date": "2026-09-24T00:00:00+00:00",
+      "uid": "9GCH6GZ",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "1. Freitag, 25.09.2026 - Mittag",
+      "date": "2026-09-25T00:00:00+00:00",
+      "uid": "YQKXBK1",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Sonntag, 27.09.2026 - Mittag",
+      "date": "2026-09-27T00:00:00+00:00",
+      "uid": "LCP4KC4",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Montag, 28.09.2026 - Mittag",
+      "date": "2026-09-28T00:00:00+00:00",
+      "uid": "MPPWW6M",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Montag, 28.09.2026 - Nachmittag",
+      "date": "2026-09-28T00:00:00+00:00",
+      "uid": "F4DPXZF",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Dienstag, 29.09.2026 - Mittag",
+      "date": "2026-09-29T00:00:00+00:00",
+      "uid": "H485MY6",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Dienstag, 29.09.2026 - Nachmittag",
+      "date": "2026-09-29T00:00:00+00:00",
+      "uid": "ZLT6U6K",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Mittwoch, 30.09.2026 - Mittag",
+      "date": "2026-09-30T00:00:00+00:00",
+      "uid": "PCE2351",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Mittwoch, 30.09.2026 - Nachmittag",
+      "date": "2026-09-30T00:00:00+00:00",
+      "uid": "7EQXM7Y",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Donnerstag, 01.10.2026 - Mittag",
+      "date": "2026-10-01T00:00:00+00:00",
+      "uid": "6LZMCCZ",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Donnerstag, 01.10.2026 - Nachmittag",
+      "date": "2026-10-01T00:00:00+00:00",
+      "uid": "P3W5W2S",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Freitag, 02.10.2026 - Mittag",
+      "date": "2026-10-02T00:00:00+00:00",
+      "uid": "G29ETMZ",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "2. Freitag, 02.10.2026 - Nachmittag",
+      "date": "2026-10-02T00:00:00+00:00",
+      "uid": "FFZQADL",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "3. Samstag, 03.10.2026 - Mittag",
+      "date": "2026-10-03T09:00:00+00:00",
+      "uid": "KW2R69W",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "3. Sonntag, 04.10.2026 - Mittag",
+      "date": "2026-10-04T00:00:00+00:00",
+      "uid": "PV38RS8",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 19,
+        "label": "Mittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    },
+    {
+      "name": "3. Sonntag, 04.10.2026 - Nachmittag",
+      "date": "2026-10-04T00:00:00+00:00",
+      "uid": "WBEHY1P",
+      "default_mc_guestlist_object_id": null,
+      "shift": {
+        "id": 20,
+        "label": "Nachmittag"
+      },
+      "use_seatplan_in_public": true,
+      "payment_required_for_confirmation": false,
+      "disable_shipping": false,
+      "new_reservation_state": "confirmed"
+    }
+  ]
+}

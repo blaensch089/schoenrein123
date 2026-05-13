@@ -1,0 +1,37 @@
+# Geheimnisse — NIEMALS zu GitHub
+.env
+*.env
+*.secret
+secrets/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Bot State (nicht-essenziell, GitHub Actions schreibt eigenen)
+state.json
+
+# Recherche-Artefakte (groß, nicht nötig im Repo)
+page_dump.html
+api_responses_full.json
+all_definitions.json
+
+# OS / Editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+.env.save
+
+# Recherche-Artefakte
+analysis_notes.txt
+analyze_*.py
+phase*_notes.txt
+guestlists.json
+screenshots/
+
+# Lokale Claude-Code-Einstellungen
+.claude/
