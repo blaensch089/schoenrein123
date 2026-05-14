@@ -1,28 +1,17 @@
 #!/usr/bin/env python3
 """
-Schottenhamel Wiesn-Reservierungs-Monitor
-Pollt /lp/guestlists alle N Minuten, filtert auf relevante Schichten,
-pusht via Telegram.
-
-Filter (Münchner Zeit):
-  ≥ 17:00          → immer pushen ("🌙 ABENDSCHICHT")
-  13:00 – 16:59    → nur Fr/Sa/So pushen
-  < 13:00          → kein Push
+Wiesn-Reservierungs-Monitor — 4 Festzelte (Typ A: festzelt-os.com REST-API)
 
 Usage:
-  python3 bot.py          # normaler Polling-Betrieb
-  python3 bot.py --test   # Startup-Report + simulierter Test-Push
+  python3 bot.py               # Polling-Betrieb
+  python3 bot.py --once        # einmaliger Check (GitHub Actions)
+  python3 bot.py --once --test # Test-Push ohne echten API-Check
 """
-import json
-import os
-import sys
-import time
-import urllib.request
-import urllib.error
+import json, os, sys, time, urllib.request, urllib.error, shutil
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# ── .env ohne externe Abhängigkeit ────────────────────────────────────────────
+
 def _load_env(path=".env"):
     try:
         with open(path) as f:
@@ -34,73 +23,105 @@ def _load_env(path=".env"):
     except FileNotFoundError:
         pass
 
+
 _load_env()
 
-# ── Konfiguration ──────────────────────────────────────────────────────────────
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT  = os.environ.get("TELEGRAM_CHAT_ID", "")
-POLL_INTERVAL  = int(os.environ.get("POLL_INTERVAL_SECONDS", "480"))  # 8 Minuten
+POLL_INTERVAL  = int(os.environ.get("POLL_INTERVAL_SECONDS", "480"))
+TENT_DELAY     = 3  # Sekunden zwischen Zelten
 
-API_BASE     = "https://schottenhamel-api.festzelt-os.com"
-BOOKING_URL  = "https://reservierung.festhalle-schottenhamel.de/reservation/"
-CACHE_FILE   = "definitions_cache.json"
-STATE_FILE   = "state.json"
-MUNICH_TZ    = ZoneInfo("Europe/Berlin")
-
-_HEADERS = {
-    "x-festzelt-os-company": "KDLWJDR",
-    "Accept": "application/json",
-    "Referer": "https://reservierung.festhalle-schottenhamel.de/",
-    "Origin":  "https://reservierung.festhalle-schottenhamel.de",
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-}
+MUNICH_TZ   = ZoneInfo("Europe/Berlin")
+STATE_FILE  = "state.json"
 _WEEKDAY_DE = ["Montag", "Dienstag", "Mittwoch", "Donnerstag",
                "Freitag", "Samstag", "Sonntag"]
 
+TENTS = [
+    {
+        "id":          "schottenhamel",
+        "name":        "Schottenhamel",
+        "api_base":    "https://schottenhamel-api.festzelt-os.com",
+        "company":     "KDLWJDR",
+        "referer":     "https://reservierung.festhalle-schottenhamel.de/",
+        "origin":      "https://reservierung.festhalle-schottenhamel.de",
+        "booking_url": "https://reservierung.festhalle-schottenhamel.de/reservation/",
+    },
+    {
+        "id":          "schuetzen",
+        "name":        "Schützenfestzelt",
+        "api_base":    "https://schuetzen-api.festzelt-os.com",
+        "company":     "M5RN1H1",
+        "referer":     "https://reservierung.schuetzenfestzelt.com/",
+        "origin":      "https://reservierung.schuetzenfestzelt.com",
+        "booking_url": "https://reservierung.schuetzenfestzelt.com/reservation/",
+    },
+    {
+        "id":          "marstall",
+        "name":        "Marstall",
+        "api_base":    "https://marstall-api.festzelt-os.com",
+        "company":     "J12J1KA",
+        "referer":     "https://reservierung.marstall-oktoberfest.de/",
+        "origin":      "https://reservierung.marstall-oktoberfest.de",
+        "booking_url": "https://reservierung.marstall-oktoberfest.de/reservation",
+    },
+    {
+        "id":          "weinzelt",
+        "name":        "Weinzelt",
+        "api_base":    "https://api.festzelt-os.com",
+        "company":     "FOSKUFW4711",
+        "referer":     "https://reservierung.weinzelt.com/",
+        "origin":      "https://reservierung.weinzelt.com",
+        "booking_url": "https://reservierung.weinzelt.com/reservation/",
+    },
+]
 
-# ── Zeitzone ───────────────────────────────────────────────────────────────────
+
+# ── Zeitzone / Filter ──────────────────────────────────────────────────────────
 def to_munich(iso_utc):
-    """ISO-UTC-String → datetime in Europe/Berlin. Gibt None zurück bei None."""
     if not iso_utc:
         return None
     return datetime.fromisoformat(iso_utc).astimezone(MUNICH_TZ)
 
 
-# ── Filter ─────────────────────────────────────────────────────────────────────
 def classify(earliest_start_utc):
-    """
-    "evening"   → ≥ 17:00 Uhr München
-    "afternoon" → 13:00–16:59 Uhr München, nur Fr/Sa/So
-    None        → kein Push
-    """
     dt = to_munich(earliest_start_utc)
     if dt is None:
         return None
     hour = dt.hour + dt.minute / 60
     if hour >= 17:
         return "evening"
-    if 13 <= hour < 17 and dt.weekday() in (4, 5, 6):  # Fr=4, Sa=5, So=6
+    if 13 <= hour < 17 and dt.weekday() in (4, 5, 6):
         return "afternoon"
     return None
 
 
-# ── HTTP-Helpers ───────────────────────────────────────────────────────────────
-def _get(url):
-    req = urllib.request.Request(url, headers=_HEADERS)
+# ── HTTP ───────────────────────────────────────────────────────────────────────
+def _headers(tent):
+    return {
+        "x-festzelt-os-company": tent["company"],
+        "Accept":     "application/json",
+        "Referer":    tent["referer"],
+        "Origin":     tent["origin"],
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    }
+
+
+def _get(url, headers):
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=15) as r:
         return json.loads(r.read())
 
 
-def fetch_guestlists():
+def fetch_guestlists(tent):
     """Gibt {uid: shift_obj} zurück; bei 429 einmal 90 s warten."""
     for attempt in range(2):
         try:
-            data = _get(f"{API_BASE}/lp/guestlists")
+            data = _get(f"{tent['api_base']}/lp/guestlists", _headers(tent))
             return {s["uid"]: s for s in data["data"]}
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt == 0:
-                print("  429 — warte 90 s ...")
+                print(f"  [{tent['name']}] 429 — warte 90 s …")
                 time.sleep(90)
             else:
                 raise
@@ -110,12 +131,12 @@ def fetch_guestlists():
 # ── Telegram ───────────────────────────────────────────────────────────────────
 def telegram_send(text):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT:
-        print("  [Telegram] Kein Token/Chat-ID konfiguriert → Push übersprungen.")
+        print("  [Telegram] Token/Chat-ID fehlt → übersprungen.")
         return False
     payload = json.dumps({
-        "chat_id": TELEGRAM_CHAT,
-        "text": text,
-        "parse_mode": "HTML",
+        "chat_id":                TELEGRAM_CHAT,
+        "text":                   text,
+        "parse_mode":             "HTML",
         "disable_web_page_preview": True,
     }).encode()
     req = urllib.request.Request(
@@ -127,55 +148,49 @@ def telegram_send(text):
         with urllib.request.urlopen(req, timeout=10) as r:
             result = json.loads(r.read())
             if not result.get("ok"):
-                print(f"  [Telegram] API-Fehler: {result}")
+                print(f"  [Telegram] Fehler: {result}")
             return result.get("ok", False)
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        print(f"  [Telegram] HTTP {e.code}: {body[:200]}")
+        print(f"  [Telegram] HTTP {e.code}: {e.read().decode()[:200]}")
         return False
     except Exception as ex:
-        print(f"  [Telegram] Fehler: {ex}")
+        print(f"  [Telegram] {ex}")
         return False
 
 
-# ── Nachricht formatieren ──────────────────────────────────────────────────────
-def format_push(cached, classification):
+# ── Nachricht ──────────────────────────────────────────────────────────────────
+def format_push(cached, clf, tent):
     uid   = cached["uid"]
-    name  = cached.get("name", uid)
-    date  = cached.get("date", "")      # "2026-09-21"
+    date  = cached.get("date", "")
     areas = cached.get("areas", [])
 
-    # Datum schön formatieren
     try:
-        dt_date = datetime.fromisoformat(date)
-        wochentag = _WEEKDAY_DE[dt_date.weekday()]
-        datum_str = f"{wochentag}, {date[8:10]}.{date[5:7]}.{date[:4]}"
+        d = datetime.fromisoformat(date)
+        datum_str = f"{_WEEKDAY_DE[d.weekday()]}, {date[8:10]}.{date[5:7]}.{date[:4]}"
     except Exception:
         datum_str = date
 
-    # Area-Zeilen mit Münchner Zeiten
     area_lines = []
     for a in sorted(areas, key=lambda x: x.get("start") or ""):
-        s = to_munich(a.get("start"))
-        e = to_munich(a.get("end"))
+        s, e = to_munich(a.get("start")), to_munich(a.get("end"))
         if s and e:
             area_lines.append(f"  • {a['label']}: {s.strftime('%H:%M')}–{e.strftime('%H:%M')}")
         elif a.get("label"):
             area_lines.append(f"  • {a['label']}")
-    areas_text = "\n".join(area_lines) if area_lines else "  (keine Bereichsdaten)"
+    areas_text = "\n".join(area_lines) or "  (keine Bereichsdaten)"
 
-    if classification == "evening":
-        header = "🌙 <b>ABENDSCHICHT VERFÜGBAR!</b>"
-    else:
-        header = "🕓 <b>Nachmittag-Schicht frei (Fr/Sa/So)</b>"
+    header = ("🌙 <b>ABENDSCHICHT VERFÜGBAR!</b>"
+              if clf == "evening"
+              else "🕓 <b>Nachmittag-Schicht frei (Fr/Sa/So)</b>")
 
     return (
         f"{header}\n\n"
+        f"🍺 <b>{tent['name']}</b>\n"
         f"<b>{datum_str}</b>\n"
-        f"{name}\n\n"
+        f"{cached.get('name', uid)}\n\n"
         f"<b>Bereiche &amp; Uhrzeiten (München):</b>\n{areas_text}\n\n"
         f"UID: <code>{uid}</code>\n"
-        f'<a href="{BOOKING_URL}">👉 Jetzt buchen</a>'
+        f'<a href="{tent["booking_url"]}">👉 Jetzt buchen</a>'
     )
 
 
@@ -183,122 +198,86 @@ def format_push(cached, classification):
 def state_load():
     try:
         with open(STATE_FILE) as f:
-            return set(json.load(f)["uids"])
+            raw = json.load(f)
+        # Migration: altes Format hatte "uids" direkt auf top-level (nur Schottenhamel)
+        if "uids" in raw and not any(t["id"] in raw for t in TENTS):
+            return {"schottenhamel": set(raw["uids"])}
+        return {k: set(v["uids"]) for k, v in raw.items() if isinstance(v, dict) and "uids" in v}
     except FileNotFoundError:
-        return None
+        return {}
 
 
-def state_save(uid_set):
+def state_save(state):
+    now = datetime.now(MUNICH_TZ).isoformat()
     with open(STATE_FILE, "w") as f:
-        json.dump({
-            "uids": sorted(uid_set),
-            "updated": datetime.now(MUNICH_TZ).isoformat(),
-        }, f, indent=2)
+        json.dump(
+            {tid: {"uids": sorted(uids), "updated": now} for tid, uids in state.items()},
+            f, indent=2,
+        )
 
 
-# ── Startup-Report ─────────────────────────────────────────────────────────────
-def print_startup_report(current_shifts, cache):
-    print()
-    print("=" * 72)
-    print("SCHOTTENHAMEL WIESN-MONITOR — Startup-Report")
-    print(f"Stand: {datetime.now(MUNICH_TZ).strftime('%Y-%m-%d %H:%M:%S')} (München)")
-    print("=" * 72)
-    header = f"{'#':<3} {'Datum':<12} {'Label':<12} {'Start MUC':<10} {'Filter':<14} Name"
-    print(header)
-    print("-" * 72)
-
-    match_count = 0
-    for i, (uid, shift) in enumerate(
-        sorted(current_shifts.items(), key=lambda x: x[1]["date"]), 1
-    ):
-        cached = cache.get(uid, {})
-        earliest = cached.get("earliest_start")
-        dt_m = to_munich(earliest)
-        time_str = dt_m.strftime("%H:%M") if dt_m else "?"
-        clf = classify(earliest)
-        clf_label = {"evening": "🌙 ABEND", "afternoon": "🕓 NACHM."}.get(clf, "—")
-        if clf:
-            match_count += 1
-        print(f"{i:<3} {shift['date'][:10]:<12} {shift['shift']['label']:<12} "
-              f"{time_str:<10} {clf_label:<14} {shift['name']}")
-
-    print("-" * 72)
-    print(f"Aktive Schichten im Filter: {match_count}")
-    if match_count == 0:
-        print("→ Kein Match — Bot wartet auf ausgebuchte Abendschichten die wiederkehren.")
-    else:
-        print("→ Diese Schichten sind bereits aktiv und werden beim nächsten neuen Auftauchen gepusht.")
-        print("  (Beim ersten Start wird kein Push ausgelöst — nur Änderungen danach zählen.)")
-    print()
+# ── Cache laden ────────────────────────────────────────────────────────────────
+def load_caches():
+    caches = {}
+    for tent in TENTS:
+        cf = f"definitions_cache_{tent['id']}.json"
+        # Schottenhamel: Migration aus altem Dateinamen
+        if tent["id"] == "schottenhamel" and not os.path.exists(cf):
+            if os.path.exists("definitions_cache.json"):
+                shutil.copy2("definitions_cache.json", cf)
+                print(f"Cache migriert: definitions_cache.json → {cf}")
+        if os.path.exists(cf):
+            with open(cf) as f:
+                caches[tent["id"]] = json.load(f)
+            print(f"Cache: {tent['name']} — {len(caches[tent['id']])} Einträge")
+        else:
+            caches[tent["id"]] = {}
+            print(f"WARNUNG: {cf} fehlt — crawl_definitions.py ausführen!")
+    return caches
 
 
-# ── Test-Push ──────────────────────────────────────────────────────────────────
-def run_test_push():
-    print("[TEST] Simuliere Abendschicht Sa 19.09.2026 19:00 Uhr ...")
-    fake = {
-        "uid": "TEST001",
-        "name": "TEST — Samstag, 19.09.2026 - Abend",
-        "date": "2026-09-19",
-        "areas": [
-            {"label": "Halle Süd/Mitte",
-             "start": "2026-09-19T17:00:00+00:00", "end": "2026-09-19T21:30:00+00:00"},
-            {"label": "Galerie",
-             "start": "2026-09-19T17:00:00+00:00", "end": "2026-09-19T21:00:00+00:00"},
-            {"label": "Balkon",
-             "start": "2026-09-19T17:00:00+00:00", "end": "2026-09-19T21:00:00+00:00"},
-        ],
-        "earliest_start": "2026-09-19T17:00:00+00:00",
-    }
-    msg = format_push(fake, "evening")
-    print()
-    print("─── Nachricht (Preview) ───────────────────────────────")
-    print(msg)
-    print("───────────────────────────────────────────────────────")
-    print()
-    ok = telegram_send(msg)
-    status = "✓ Zugestellt" if ok else "✗ Fehlgeschlagen (Token/Chat-ID in .env prüfen)"
-    print(f"[TEST] Telegram-Versand: {status}")
-
-
-# ── Ein Poll-Zyklus ────────────────────────────────────────────────────────────
-def run_check(current, last_uids, cache):
-    """Vergleicht aktuellen Stand mit last_uids, pusht bei Treffern.
-    Gibt aktuelle UID-Menge zurück."""
+# ── Check ──────────────────────────────────────────────────────────────────────
+def run_check(tent, current, last_uids, cache):
     ts = datetime.now(MUNICH_TZ).strftime("%H:%M:%S")
     current_uids = set(current.keys())
     appeared = current_uids - last_uids
 
     if not appeared:
-        print(f"[{ts}] Keine Änderung — {len(current_uids)} Schichten aktiv.")
+        print(f"[{ts}] [{tent['name']}] Keine Änderung ({len(current_uids)} Schichten).")
     else:
-        print(f"[{ts}] {len(appeared)} neue Schicht(en): {appeared}")
+        print(f"[{ts}] [{tent['name']}] {len(appeared)} neu: {appeared}")
         for uid in appeared:
             cached = cache.get(uid)
             if cached is None:
-                shift_obj = current.get(uid, {})
-                cached = {
-                    "uid": uid,
-                    "name": shift_obj.get("name", uid),
-                    "date": shift_obj.get("date", "")[:10],
-                    "areas": [],
-                    "earliest_start": None,
-                }
-                print(f"  ! UID {uid} nicht im Cache — kein Zeitfilter möglich, Push wird unterdrückt.")
-                print(f"    Bitte crawl_definitions.py erneut ausführen um den Cache zu aktualisieren.")
+                print(f"  ! {uid} nicht im Cache — Push unterdrückt.")
                 continue
-
             clf = classify(cached.get("earliest_start"))
             if clf:
-                msg = format_push(cached, clf)
                 print(f"  → Push [{clf}]: {cached['name']}")
-                telegram_send(msg)
+                telegram_send(format_push(cached, clf, tent))
             else:
-                start_str = cached.get("earliest_start", "?")
-                print(f"  → Kein Push (Filter): {cached['name']} "
-                      f"[Start: {to_munich(start_str).strftime('%H:%M') if to_munich(start_str) else '?'} Uhr]")
-
-    state_save(current_uids)
+                dt = to_munich(cached.get("earliest_start"))
+                print(f"  → Filter: {cached['name']} [{dt.strftime('%H:%M') if dt else '?'}]")
     return current_uids
+
+
+# ── Test-Push ──────────────────────────────────────────────────────────────────
+def run_test_push():
+    print("\n[TEST] Sende simulierte Abendschicht für jedes Zelt …")
+    for i, tent in enumerate(TENTS):
+        if i > 0:
+            time.sleep(TENT_DELAY)
+        fake = {
+            "uid":            f"TEST-{tent['id'][:4].upper()}",
+            "name":           f"TEST — {tent['name']} Abend",
+            "date":           "2026-09-19",
+            "areas":          [{"label": "Halle",
+                                "start": "2026-09-19T17:00:00+00:00",
+                                "end":   "2026-09-19T21:30:00+00:00"}],
+            "earliest_start": "2026-09-19T17:00:00+00:00",
+        }
+        ok = telegram_send(format_push(fake, "evening", tent))
+        print(f"  [{tent['name']}] {'✓ Zugestellt' if ok else '✗ Fehlgeschlagen'}")
 
 
 # ── Haupt-Loop ─────────────────────────────────────────────────────────────────
@@ -306,48 +285,56 @@ def main():
     test_mode = "--test" in sys.argv
     once_mode = "--once" in sys.argv
 
-    if not os.path.exists(CACHE_FILE):
-        print(f"Fehler: {CACHE_FILE} nicht gefunden.")
-        print("Bitte zuerst crawl_definitions.py ausführen.")
-        sys.exit(1)
-
-    with open(CACHE_FILE) as f:
-        cache = json.load(f)
-
-    print("Lade aktuelle Schicht-Liste von der API ...")
-    current = fetch_guestlists()
-    print(f"  → {len(current)} Schichten empfangen.")
-
-    print_startup_report(current, cache)
+    caches = load_caches()
 
     if test_mode:
         run_test_push()
         return
 
-    last_uids = state_load()
-    if last_uids is None:
-        print("Kein State-File gefunden — initialisiere mit aktuellem Stand.")
-        last_uids = set(current.keys())
-        state_save(last_uids)
-        print(f"State gespeichert: {len(last_uids)} Schichten.")
+    state = state_load()
+
+    print("\nLade Schicht-Listen …")
+    for i, tent in enumerate(TENTS):
+        if i > 0:
+            time.sleep(TENT_DELAY)
+        print(f"  {tent['name']} …", end=" ", flush=True)
+        try:
+            current = fetch_guestlists(tent)
+        except Exception as ex:
+            print(f"Fehler: {ex} — übersprungen.")
+            continue
+        print(f"{len(current)} Schichten.")
+
+        tid = tent["id"]
+        if tid not in state:
+            state[tid] = set(current.keys())
+            print(f"  → State initialisiert ({len(state[tid])} UIDs).")
+            state_save(state)
+        else:
+            new_uids = run_check(tent, current, state[tid], caches[tid])
+            state[tid] = new_uids
+            state_save(state)
 
     if once_mode:
-        run_check(current, last_uids, cache)
         return
 
-    print(f"Polling-Intervall: {POLL_INTERVAL} s. Strg+C zum Beenden.\n")
-
+    print(f"\nPolling alle {POLL_INTERVAL} s. Strg+C zum Beenden.\n")
     while True:
         time.sleep(POLL_INTERVAL)
-        ts = datetime.now(MUNICH_TZ).strftime("%H:%M:%S")
-
-        try:
-            current = fetch_guestlists()
-        except Exception as e:
-            print(f"[{ts}] API-Fehler: {e}")
-            continue
-
-        last_uids = run_check(current, last_uids, cache)
+        for i, tent in enumerate(TENTS):
+            if i > 0:
+                time.sleep(TENT_DELAY)
+            try:
+                current = fetch_guestlists(tent)
+            except urllib.error.HTTPError as e:
+                print(f"  [{tent['name']}] HTTP {e.code} — übersprungen.")
+                continue
+            except Exception as ex:
+                print(f"  [{tent['name']}] {ex} — übersprungen.")
+                continue
+            new_uids = run_check(tent, current, state[tent["id"]], caches[tent["id"]])
+            state[tent["id"]] = new_uids
+            state_save(state)
 
 
 if __name__ == "__main__":
