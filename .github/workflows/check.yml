@@ -21,6 +21,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
       - name: Restore state from previous run
         uses: actions/download-artifact@v4
         with:
