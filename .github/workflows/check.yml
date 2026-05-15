@@ -32,6 +32,8 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SCHUETZEN_CUSTOMER_NUMBER: ${{ secrets.SCHUETZEN_CUSTOMER_NUMBER }}
+          SCHUETZEN_PASSWORD: ${{ secrets.SCHUETZEN_PASSWORD }}
         run: python3 bot.py --once
 
       - name: Save state for next run
