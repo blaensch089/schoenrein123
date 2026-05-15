@@ -30,6 +30,10 @@ all_definitions.json
 analysis_notes.txt
 analyze_*.py
 phase*_notes.txt
+
+# Wegwerf-Testskripte (Zugangsdaten-Tests) und Debug-Skripte
+test_login_*.py
+debug_login_*.py
 guestlists.json
 screenshots/
 

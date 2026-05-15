@@ -7,9 +7,11 @@ Usage:
   python3 bot.py --once        # einmaliger Check (GitHub Actions)
   python3 bot.py --once --test # Test-Push ohne echten API-Check
 """
-import json, os, sys, time, urllib.request, urllib.error, shutil
+import json, os, sys, time, shutil
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
+import requests
 
 
 def _load_env(path=".env"):
@@ -45,15 +47,20 @@ TENTS = [
         "referer":     "https://reservierung.festhalle-schottenhamel.de/",
         "origin":      "https://reservierung.festhalle-schottenhamel.de",
         "booking_url": "https://reservierung.festhalle-schottenhamel.de/reservation/",
+        "needs_login": False,
     },
     {
-        "id":          "schuetzen",
-        "name":        "Schützenfestzelt",
-        "api_base":    "https://schuetzen-api.festzelt-os.com",
-        "company":     "M5RN1H1",
-        "referer":     "https://reservierung.schuetzenfestzelt.com/",
-        "origin":      "https://reservierung.schuetzenfestzelt.com",
-        "booking_url": "https://reservierung.schuetzenfestzelt.com/reservation/",
+        "id":              "schuetzen",
+        "name":            "Schützenfestzelt",
+        "api_base":        "https://schuetzen-api.festzelt-os.com",
+        "company":         "M5RN1H1",
+        "referer":         "https://reservierung.schuetzenfestzelt.com/",
+        "origin":          "https://reservierung.schuetzenfestzelt.com",
+        "booking_url":     "https://reservierung.schuetzenfestzelt.com/reservation/",
+        "needs_login":     True,
+        "login_endpoint":  "https://schuetzen-api.festzelt-os.com/lp/auth/login",
+        "cred_number_env": "SCHUETZEN_CUSTOMER_NUMBER",
+        "cred_password_env": "SCHUETZEN_PASSWORD",
     },
     {
         "id":          "marstall",
@@ -63,6 +70,7 @@ TENTS = [
         "referer":     "https://reservierung.marstall-oktoberfest.de/",
         "origin":      "https://reservierung.marstall-oktoberfest.de",
         "booking_url": "https://reservierung.marstall-oktoberfest.de/reservation",
+        "needs_login": False,
     },
     {
         "id":          "weinzelt",
@@ -72,8 +80,11 @@ TENTS = [
         "referer":     "https://reservierung.weinzelt.com/",
         "origin":      "https://reservierung.weinzelt.com",
         "booking_url": "https://reservierung.weinzelt.com/reservation/",
+        "needs_login": False,
     },
 ]
+
+INITIAL_BURST_THRESHOLD = 10
 
 
 # ── Zeitzone / Filter ──────────────────────────────────────────────────────────
@@ -96,31 +107,75 @@ def classify(earliest_start_utc):
 
 
 # ── HTTP ───────────────────────────────────────────────────────────────────────
+_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+       "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+
+
 def _headers(tent):
     return {
-        "x-festzelt-os-company": tent["company"],
-        "Accept":     "application/json",
-        "Referer":    tent["referer"],
-        "Origin":     tent["origin"],
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept":                "application/json, text/plain, */*",
+        "x-festzelt-os-Company": tent["company"],
+        "Referer":               tent["referer"],
+        "Origin":                tent["origin"],
+        "User-Agent":            _UA,
     }
 
 
 def _get(url, headers):
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())
+    resp = requests.get(url, headers=headers, timeout=15)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def fetch_token(tent) -> str:
+    """Holt Bearer-Token via POST login. Passwort wird sofort nach Verwendung gelöscht."""
+    customer_number = os.environ.get(tent["cred_number_env"], "")
+    password        = os.environ.get(tent["cred_password_env"], "")
+    if not customer_number or not password:
+        raise ValueError(
+            f"Login-Daten für {tent['name']} fehlen "
+            f"({tent['cred_number_env']} / {tent['cred_password_env']})"
+        )
+    time.sleep(3)
+    try:
+        resp = requests.post(
+            tent["login_endpoint"],
+            json={"customer_number": customer_number, "password": password},
+            headers={
+                "Accept":                "application/json, text/plain, */*",
+                "Content-Type":          "application/json",
+                "x-festzelt-os-Company": tent["company"],
+                "User-Agent":            _UA,
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        code = e.response.status_code
+        if code == 401:
+            raise ValueError(f"Login fehlgeschlagen ({tent['name']}): ungültige Zugangsdaten")
+        raise ValueError(f"Login HTTP {code} ({tent['name']}): {e.response.text[:200]}")
+    finally:
+        del password
+    try:
+        return resp.json()["data"]["token"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"Token nicht in Login-Response ({tent['name']}): {exc}")
 
 
 def fetch_guestlists(tent):
     """Gibt {uid: shift_obj} zurück; bei 429 einmal 90 s warten."""
+    headers = _headers(tent)
+    if tent.get("needs_login"):
+        token = fetch_token(tent)
+        headers["Authorization"] = f"Bearer {token}"
+        del token
     for attempt in range(2):
         try:
-            data = _get(f"{tent['api_base']}/lp/guestlists", _headers(tent))
+            data = _get(f"{tent['api_base']}/lp/guestlists", headers)
             return {s["uid"]: s for s in data["data"]}
-        except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt == 0:
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429 and attempt == 0:
                 print(f"  [{tent['name']}] 429 — warte 90 s …")
                 time.sleep(90)
             else:
@@ -133,25 +188,23 @@ def telegram_send(text):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT:
         print("  [Telegram] Token/Chat-ID fehlt → übersprungen.")
         return False
-    payload = json.dumps({
-        "chat_id":                TELEGRAM_CHAT,
-        "text":                   text,
-        "parse_mode":             "HTML",
-        "disable_web_page_preview": True,
-    }).encode()
-    req = urllib.request.Request(
-        f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-    )
     try:
-        with urllib.request.urlopen(req, timeout=10) as r:
-            result = json.loads(r.read())
-            if not result.get("ok"):
-                print(f"  [Telegram] Fehler: {result}")
-            return result.get("ok", False)
-    except urllib.error.HTTPError as e:
-        print(f"  [Telegram] HTTP {e.code}: {e.read().decode()[:200]}")
+        resp = requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+            json={
+                "chat_id":                  TELEGRAM_CHAT,
+                "text":                     text,
+                "parse_mode":               "HTML",
+                "disable_web_page_preview": True,
+            },
+            timeout=10,
+        )
+        result = resp.json()
+        if not result.get("ok"):
+            print(f"  [Telegram] Fehler: {result}")
+        return result.get("ok", False)
+    except requests.exceptions.HTTPError as e:
+        print(f"  [Telegram] HTTP {e.response.status_code}: {e.response.text[:200]}")
         return False
     except Exception as ex:
         print(f"  [Telegram] {ex}")
@@ -191,6 +244,24 @@ def format_push(cached, clf, tent):
         f"<b>Bereiche &amp; Uhrzeiten (München):</b>\n{areas_text}\n\n"
         f"UID: <code>{uid}</code>\n"
         f'<a href="{tent["booking_url"]}">👉 Jetzt buchen</a>'
+    )
+
+
+def format_summary_push(tent, appeared_uids, cache, *, first_run=False):
+    total   = len(appeared_uids)
+    evening = sum(
+        1 for uid in appeared_uids
+        if cache.get(uid) and classify(cache[uid].get("earliest_start")) == "evening"
+    )
+    afternoon = sum(
+        1 for uid in appeared_uids
+        if cache.get(uid) and classify(cache[uid].get("earliest_start")) == "afternoon"
+    )
+    label = "Initial-Lauf" if first_run else "Bulk-Update"
+    return (
+        f"🍺 <b>{tent['name']}</b>: {label}, {total} Schichten erfasst.\n"
+        f"Abendschichten: <b>{evening}</b>, Nachmittag-WE: <b>{afternoon}</b>.\n"
+        f"Ab nächstem Lauf werden nur noch neue Treffer gemeldet."
     )
 
 
@@ -237,13 +308,17 @@ def load_caches():
 
 
 # ── Check ──────────────────────────────────────────────────────────────────────
-def run_check(tent, current, last_uids, cache):
+def run_check(tent, current, last_uids, cache, *, first_run=False):
     ts = datetime.now(MUNICH_TZ).strftime("%H:%M:%S")
     current_uids = set(current.keys())
     appeared = current_uids - last_uids
 
     if not appeared:
         print(f"[{ts}] [{tent['name']}] Keine Änderung ({len(current_uids)} Schichten).")
+    elif first_run or len(appeared) >= INITIAL_BURST_THRESHOLD:
+        label = "Initial-Lauf" if first_run else "Bulk"
+        print(f"[{ts}] [{tent['name']}] {label}: {len(appeared)} neu — sende Summary.")
+        telegram_send(format_summary_push(tent, appeared, cache, first_run=first_run))
     else:
         print(f"[{ts}] [{tent['name']}] {len(appeared)} neu: {appeared}")
         for uid in appeared:
@@ -307,8 +382,8 @@ def main():
 
         tid = tent["id"]
         if tid not in state:
-            state[tid] = set(current.keys())
-            print(f"  → State initialisiert ({len(state[tid])} UIDs).")
+            new_uids = run_check(tent, current, set(), caches[tid], first_run=True)
+            state[tid] = new_uids
             state_save(state)
         else:
             new_uids = run_check(tent, current, state[tid], caches[tid])
@@ -326,8 +401,8 @@ def main():
                 time.sleep(TENT_DELAY)
             try:
                 current = fetch_guestlists(tent)
-            except urllib.error.HTTPError as e:
-                print(f"  [{tent['name']}] HTTP {e.code} — übersprungen.")
+            except requests.exceptions.HTTPError as e:
+                print(f"  [{tent['name']}] HTTP {e.response.status_code} — übersprungen.")
                 continue
             except Exception as ex:
                 print(f"  [{tent['name']}] {ex} — übersprungen.")
