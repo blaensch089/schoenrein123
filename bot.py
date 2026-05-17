@@ -7,7 +7,7 @@ Usage:
   python3 bot.py --once        # einmaliger Check (GitHub Actions)
   python3 bot.py --once --test # Test-Push ohne echten API-Check
 """
-import json, os, sys, time, shutil
+import json, os, sys, time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -302,11 +302,6 @@ def load_caches():
     caches = {}
     for tent in TENTS:
         cf = f"definitions_cache_{tent['id']}.json"
-        # Schottenhamel: Migration aus altem Dateinamen
-        if tent["id"] == "schottenhamel" and not os.path.exists(cf):
-            if os.path.exists("definitions_cache.json"):
-                shutil.copy2("definitions_cache.json", cf)
-                print(f"Cache migriert: definitions_cache.json → {cf}")
         if os.path.exists(cf):
             with open(cf) as f:
                 caches[tent["id"]] = json.load(f)
