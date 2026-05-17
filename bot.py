@@ -247,6 +247,16 @@ def format_push(cached, clf, tent):
     )
 
 
+def format_unknown_push(uid, tent):
+    return (
+        f"⚠️ <b>Neue Schicht verfügbar</b>\n\n"
+        f"🍺 <b>{tent['name']}</b>\n"
+        f"UID: <code>{uid}</code>\n\n"
+        f"Uhrzeit unbekannt — bitte im Portal prüfen.\n"
+        f'<a href="{tent["booking_url"]}">👉 Zum Portal</a>'
+    )
+
+
 def format_summary_push(tent, appeared_uids, cache, *, first_run=False):
     total   = len(appeared_uids)
     evening = sum(
@@ -324,7 +334,8 @@ def run_check(tent, current, last_uids, cache, *, first_run=False):
         for uid in appeared:
             cached = cache.get(uid)
             if cached is None:
-                print(f"  ! {uid} nicht im Cache — Push unterdrückt.")
+                print(f"  ! {uid} nicht im Cache — Push mit Hinweis.")
+                telegram_send(format_unknown_push(uid, tent))
                 continue
             clf = classify(cached.get("earliest_start"))
             if clf:

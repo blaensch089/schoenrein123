@@ -1,88 +1,155 @@
 """
 Definitions-Crawl für alle Festzelt-OS Typ-A-Zelte.
 Speichert Area-Zeiten pro UID in definitions_cache_<id>.json.
-Zelte mit vorhandenem Cache werden übersprungen.
+Bestehende Cache-Dateien werden überschrieben.
 """
-import json, os, shutil, time, urllib.request, urllib.error
+import json, os, time
+
+import requests
+
+
+def _load_env(path=".env"):
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, _, val = line.partition("=")
+                    os.environ.setdefault(key.strip(), val.strip().strip('"\''))
+    except FileNotFoundError:
+        pass
+
+
+_load_env()
 
 DELAY    = 3    # Sekunden zwischen API-Calls
 COOLDOWN = 90   # Sekunden nach 429
 
+_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+       "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+
 TENTS = [
     {
-        "id":       "schottenhamel",
-        "name":     "Schottenhamel",
-        "api_base": "https://schottenhamel-api.festzelt-os.com",
-        "company":  "KDLWJDR",
-        "referer":  "https://reservierung.festhalle-schottenhamel.de/",
-        "origin":   "https://reservierung.festhalle-schottenhamel.de",
+        "id":          "schottenhamel",
+        "name":        "Schottenhamel",
+        "api_base":    "https://schottenhamel-api.festzelt-os.com",
+        "company":     "KDLWJDR",
+        "referer":     "https://reservierung.festhalle-schottenhamel.de/",
+        "origin":      "https://reservierung.festhalle-schottenhamel.de",
+        "needs_login": False,
     },
     {
-        "id":       "schuetzen",
-        "name":     "Schützenfestzelt",
-        "api_base": "https://schuetzen-api.festzelt-os.com",
-        "company":  "M5RN1H1",
-        "referer":  "https://reservierung.schuetzenfestzelt.com/",
-        "origin":   "https://reservierung.schuetzenfestzelt.com",
+        "id":              "schuetzen",
+        "name":            "Schützenfestzelt",
+        "api_base":        "https://schuetzen-api.festzelt-os.com",
+        "company":         "M5RN1H1",
+        "referer":         "https://reservierung.schuetzenfestzelt.com/",
+        "origin":          "https://reservierung.schuetzenfestzelt.com",
+        "needs_login":     True,
+        "login_endpoint":  "https://schuetzen-api.festzelt-os.com/lp/auth/login",
+        "cred_number_env": "SCHUETZEN_CUSTOMER_NUMBER",
+        "cred_password_env": "SCHUETZEN_PASSWORD",
     },
     {
-        "id":       "marstall",
-        "name":     "Marstall",
-        "api_base": "https://marstall-api.festzelt-os.com",
-        "company":  "J12J1KA",
-        "referer":  "https://reservierung.marstall-oktoberfest.de/",
-        "origin":   "https://reservierung.marstall-oktoberfest.de",
+        "id":          "marstall",
+        "name":        "Marstall",
+        "api_base":    "https://marstall-api.festzelt-os.com",
+        "company":     "J12J1KA",
+        "referer":     "https://reservierung.marstall-oktoberfest.de/",
+        "origin":      "https://reservierung.marstall-oktoberfest.de",
+        "needs_login": False,
     },
     {
-        "id":       "weinzelt",
-        "name":     "Weinzelt",
-        "api_base": "https://api.festzelt-os.com",
-        "company":  "FOSKUFW4711",
-        "referer":  "https://reservierung.weinzelt.com/",
-        "origin":   "https://reservierung.weinzelt.com",
+        "id":          "weinzelt",
+        "name":        "Weinzelt",
+        "api_base":    "https://api.festzelt-os.com",
+        "company":     "FOSKUFW4711",
+        "referer":     "https://reservierung.weinzelt.com/",
+        "origin":      "https://reservierung.weinzelt.com",
+        "needs_login": False,
     },
 ]
 
 
-def make_headers(tent):
+def _base_headers(tent):
     return {
-        "x-festzelt-os-company": tent["company"],
-        "Accept":     "application/json",
-        "Referer":    tent["referer"],
-        "Origin":     tent["origin"],
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept":                "application/json, text/plain, */*",
+        "x-festzelt-os-Company": tent["company"],
+        "Referer":               tent["referer"],
+        "Origin":                tent["origin"],
+        "User-Agent":            _UA,
     }
 
 
+def fetch_token(tent) -> str:
+    """Holt Bearer-Token via POST login. Passwort wird sofort nach Verwendung gelöscht."""
+    customer_number = os.environ.get(tent["cred_number_env"], "")
+    password        = os.environ.get(tent["cred_password_env"], "")
+    if not customer_number or not password:
+        raise ValueError(
+            f"Login-Daten für {tent['name']} fehlen "
+            f"({tent['cred_number_env']} / {tent['cred_password_env']})"
+        )
+    time.sleep(DELAY)
+    try:
+        resp = requests.post(
+            tent["login_endpoint"],
+            json={"customer_number": customer_number, "password": password},
+            headers={
+                "Accept":                "application/json, text/plain, */*",
+                "Content-Type":          "application/json",
+                "x-festzelt-os-Company": tent["company"],
+                "User-Agent":            _UA,
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        code = e.response.status_code
+        if code == 401:
+            raise ValueError(f"Login fehlgeschlagen ({tent['name']}): ungültige Zugangsdaten")
+        raise ValueError(f"Login HTTP {code} ({tent['name']}): {e.response.text[:200]}")
+    finally:
+        del password
+    try:
+        return resp.json()["data"]["token"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"Token nicht in Login-Response ({tent['name']}): {exc}")
+
+
 def fetch(url, headers):
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read())
+    resp = requests.get(url, headers=headers, timeout=15)
+    resp.raise_for_status()
+    return resp.json()
 
 
 def crawl_tent(tent):
     cache_file = f"definitions_cache_{tent['id']}.json"
-    headers    = make_headers(tent)
 
-    # Schottenhamel: Migration aus altem Dateinamen
-    if tent["id"] == "schottenhamel" and not os.path.exists(cache_file):
-        if os.path.exists("definitions_cache.json"):
-            shutil.copy2("definitions_cache.json", cache_file)
-            print(f"  Cache migriert: definitions_cache.json → {cache_file}")
+    # Login wenn nötig
+    token = None
+    if tent.get("needs_login"):
+        try:
+            token = fetch_token(tent)
+        except (ValueError, requests.exceptions.RequestException) as e:
+            print(f"  {tent['name']}: Login-Fehler: {e} — überspringe.")
+            return
 
-    if os.path.exists(cache_file):
-        with open(cache_file) as f:
-            n = len(json.load(f))
-        print(f"  {tent['name']}: Cache vorhanden ({n} Einträge) — übersprungen.")
-        return
+    headers = _base_headers(tent)
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+        del token
 
     print(f"\n{'='*60}")
     print(f"Crawle: {tent['name']}")
     print(f"{'='*60}")
 
     print("  Lade Guestlists …", end=" ", flush=True)
-    guestlists = fetch(f"{tent['api_base']}/lp/guestlists", headers)["data"]
+    try:
+        guestlists = fetch(f"{tent['api_base']}/lp/guestlists", headers)["data"]
+    except Exception as e:
+        print(f"FEHLER: {e}")
+        return
     print(f"{len(guestlists)} Schichten.")
     time.sleep(DELAY)
 
@@ -114,13 +181,14 @@ def crawl_tent(tent):
                 cache[uid]["earliest_start"] = min(starts) if starts else None
                 print(f"OK ({len(areas)} Areas)")
                 break
-            except urllib.error.HTTPError as e:
-                if e.code == 429 and retry < 2:
+            except requests.exceptions.HTTPError as e:
+                code = e.response.status_code
+                if code == 429 and retry < 2:
                     print(f"\n  429 — warte {COOLDOWN}s …", end=" ", flush=True)
                     time.sleep(COOLDOWN)
                     retry += 1
                 else:
-                    print(f"FEHLER HTTP {e.code} — übersprungen")
+                    print(f"FEHLER HTTP {code} — übersprungen")
                     break
             except Exception as ex:
                 print(f"FEHLER {ex} — übersprungen")
