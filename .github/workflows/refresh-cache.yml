@@ -1,0 +1,53 @@
+name: Cache-Refresh
+
+on:
+  schedule:
+    # Täglich um 3:00 UTC = 5:00 Uhr München (CEST UTC+2)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-cache:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crawler
+        env:
+          SCHUETZEN_CUSTOMER_NUMBER: ${{ secrets.SCHUETZEN_CUSTOMER_NUMBER }}
+          SCHUETZEN_PASSWORD: ${{ secrets.SCHUETZEN_PASSWORD }}
+        run: python3 crawl_definitions.py
+
+      - name: Commit updated caches
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add definitions_cache_*.json
+          if git diff --staged --quiet; then
+            echo "Keine Cache-Änderungen — kein Commit."
+            exit 0
+          fi
+          git commit -m "Cache-Refresh: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
+
+      - name: Cache summary
+        run: |
+          echo "=== Cache-Datei-Größen ==="
+          for f in definitions_cache_*.json; do
+            count=$(python3 -c "import json; print(len(json.load(open('$f'))))" 2>/dev/null || echo "?")
+            echo "$f: $count Einträge"
+          done
