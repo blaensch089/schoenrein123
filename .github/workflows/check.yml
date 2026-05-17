@@ -1,10 +1,7 @@
 name: Wiesn-Bot Check
 
 on:
-  schedule:
-    # Stündlich zwischen 4:00 und 20:00 UTC = 6:00-22:00 München (CEST UTC+2)
-    - cron: '0 4-20 * * *'
-  workflow_dispatch:  # manueller Trigger via UI
+  workflow_dispatch:
 
 jobs:
   check-availability:
