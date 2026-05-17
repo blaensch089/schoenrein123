@@ -25,11 +25,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Restore state from previous run
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: bot-state
+          workflow: check.yml
+          workflow_conclusion: success
           path: .
-        continue-on-error: true  # erster Lauf hat noch kein Artifact
+          if_no_artifact_found: warn
 
       - name: Run bot
         env:
