@@ -12,6 +12,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import requests
+import braeurosl
 
 
 def _load_env(path=".env"):
@@ -41,6 +42,7 @@ _WEEKDAY_DE = ["Montag", "Dienstag", "Mittwoch", "Donnerstag",
 TENTS = [
     {
         "id":          "schottenhamel",
+        "type":        "festzelt_os_api",
         "name":        "Schottenhamel",
         "api_base":    "https://schottenhamel-api.festzelt-os.com",
         "company":     "KDLWJDR",
@@ -51,6 +53,7 @@ TENTS = [
     },
     {
         "id":              "schuetzen",
+        "type":            "festzelt_os_api",
         "name":            "Schützenfestzelt",
         "api_base":        "https://schuetzen-api.festzelt-os.com",
         "company":         "M5RN1H1",
@@ -64,6 +67,7 @@ TENTS = [
     },
     {
         "id":          "marstall",
+        "type":        "festzelt_os_api",
         "name":        "Marstall",
         "api_base":    "https://marstall-api.festzelt-os.com",
         "company":     "J12J1KA",
@@ -74,6 +78,7 @@ TENTS = [
     },
     {
         "id":          "weinzelt",
+        "type":        "festzelt_os_api",
         "name":        "Weinzelt",
         "api_base":    "https://api.festzelt-os.com",
         "company":     "FOSKUFW4711",
@@ -81,6 +86,12 @@ TENTS = [
         "origin":      "https://reservierung.weinzelt.com",
         "booking_url": "https://reservierung.weinzelt.com/reservation/",
         "needs_login": False,
+    },
+    {
+        "id":          "braeurosl",
+        "type":        "livewire_braeurosl",
+        "name":        "Bräurosl",
+        "booking_url": "https://reservierung.braeurosl.de/reservation/",
     },
 ]
 
@@ -301,6 +312,8 @@ def state_save(state):
 def load_caches():
     caches = {}
     for tent in TENTS:
+        if tent.get("type") == "livewire_braeurosl":
+            continue
         cf = f"definitions_cache_{tent['id']}.json"
         if os.path.exists(cf):
             with open(cf) as f:
@@ -378,21 +391,34 @@ def main():
     for i, tent in enumerate(TENTS):
         if i > 0:
             time.sleep(TENT_DELAY)
-        print(f"  {tent['name']} …", end=" ", flush=True)
-        try:
-            current = fetch_guestlists(tent)
-        except Exception as ex:
-            print(f"Fehler: {ex} — übersprungen.")
-            continue
-        print(f"{len(current)} Schichten.")
-
         tid = tent["id"]
+        if tent.get("type") == "livewire_braeurosl":
+            try:
+                current = braeurosl.check_braeurosl()
+            except RuntimeError as ex:
+                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                print(f"  [{tent['name']}] {msg} — übersprungen.")
+                continue
+            except Exception as ex:
+                print(f"  [{tent['name']}] {ex} — übersprungen.")
+                continue
+            cache = current
+        else:
+            print(f"  {tent['name']} …", end=" ", flush=True)
+            try:
+                current = fetch_guestlists(tent)
+            except Exception as ex:
+                print(f"Fehler: {ex} — übersprungen.")
+                continue
+            print(f"{len(current)} Schichten.")
+            cache = caches[tid]
+
         if tid not in state:
-            new_uids = run_check(tent, current, set(), caches[tid], first_run=True)
+            new_uids = run_check(tent, current, set(), cache, first_run=True)
             state[tid] = new_uids
             state_save(state)
         else:
-            new_uids = run_check(tent, current, state[tid], caches[tid])
+            new_uids = run_check(tent, current, state[tid], cache)
             state[tid] = new_uids
             state_save(state)
 
@@ -405,16 +431,30 @@ def main():
         for i, tent in enumerate(TENTS):
             if i > 0:
                 time.sleep(TENT_DELAY)
-            try:
-                current = fetch_guestlists(tent)
-            except requests.exceptions.HTTPError as e:
-                print(f"  [{tent['name']}] HTTP {e.response.status_code} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            new_uids = run_check(tent, current, state[tent["id"]], caches[tent["id"]])
-            state[tent["id"]] = new_uids
+            tid = tent["id"]
+            if tent.get("type") == "livewire_braeurosl":
+                try:
+                    current = braeurosl.check_braeurosl()
+                except RuntimeError as ex:
+                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                    print(f"  [{tent['name']}] {msg} — übersprungen.")
+                    continue
+                except Exception as ex:
+                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+                    continue
+                cache = current
+            else:
+                try:
+                    current = fetch_guestlists(tent)
+                except requests.exceptions.HTTPError as e:
+                    print(f"  [{tent['name']}] HTTP {e.response.status_code} — übersprungen.")
+                    continue
+                except Exception as ex:
+                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+                    continue
+                cache = caches[tid]
+            new_uids = run_check(tent, current, state[tid], cache)
+            state[tid] = new_uids
             state_save(state)
 
 

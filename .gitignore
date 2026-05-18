@@ -39,3 +39,10 @@ screenshots/
 
 # Lokale Claude-Code-Einstellungen
 .claude/
+
+# Recherche-Mitschnitte (Roh-HTML der Portale)
+*_initial.html
+*_step*.html
+
+# Backup-Dateien
+*.bak
