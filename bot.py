@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 import requests
 import braeurosl
+import hacker
 
 
 def _load_env(path=".env"):
@@ -92,6 +93,12 @@ TENTS = [
         "type":        "livewire_braeurosl",
         "name":        "Bräurosl",
         "booking_url": "https://reservierung.braeurosl.de/reservation/",
+    },
+    {
+        "id":          "hacker",
+        "type":        "livewire_hacker",
+        "name":        "Hacker",
+        "booking_url": "https://reservierung.derhimmelderbayern.de/reservierung",
     },
 ]
 
@@ -312,7 +319,7 @@ def state_save(state):
 def load_caches():
     caches = {}
     for tent in TENTS:
-        if tent.get("type") == "livewire_braeurosl":
+        if tent.get("type", "").startswith("livewire_"):
             continue
         cf = f"definitions_cache_{tent['id']}.json"
         if os.path.exists(cf):
@@ -403,6 +410,17 @@ def main():
                 print(f"  [{tent['name']}] {ex} — übersprungen.")
                 continue
             cache = current
+        elif tent.get("type") == "livewire_hacker":
+            try:
+                current = hacker.check_hacker()
+            except RuntimeError as ex:
+                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                print(f"  [{tent['name']}] {msg} — übersprungen.")
+                continue
+            except Exception as ex:
+                print(f"  [{tent['name']}] {ex} — übersprungen.")
+                continue
+            cache = current
         else:
             print(f"  {tent['name']} …", end=" ", flush=True)
             try:
@@ -435,6 +453,17 @@ def main():
             if tent.get("type") == "livewire_braeurosl":
                 try:
                     current = braeurosl.check_braeurosl()
+                except RuntimeError as ex:
+                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                    print(f"  [{tent['name']}] {msg} — übersprungen.")
+                    continue
+                except Exception as ex:
+                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+                    continue
+                cache = current
+            elif tent.get("type") == "livewire_hacker":
+                try:
+                    current = hacker.check_hacker()
                 except RuntimeError as ex:
                     msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
                     print(f"  [{tent['name']}] {msg} — übersprungen.")

@@ -46,3 +46,7 @@ screenshots/
 
 # Backup-Dateien
 *.bak
+
+# Weitere Recherche-HTML-Mitschnitte (Hacker und künftige Livewire-Zelte)
+*_reservierung.html
+*_response.html
