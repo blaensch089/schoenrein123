@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 import requests
 import braeurosl
 import hacker
+import armbrustschuetzen
 
 
 def _load_env(path=".env"):
@@ -99,6 +100,12 @@ TENTS = [
         "type":        "livewire_hacker",
         "name":        "Hacker",
         "booking_url": "https://reservierung.derhimmelderbayern.de/reservierung",
+    },
+    {
+        "id":          "armbrustschuetzen",
+        "type":        "livewire_armbrustschuetzen",
+        "name":        "Armbrustschützenzelt",
+        "booking_url": "https://reservierung.armbrustschuetzenzelt.de/reservierung",
     },
 ]
 
@@ -421,6 +428,17 @@ def main():
                 print(f"  [{tent['name']}] {ex} — übersprungen.")
                 continue
             cache = current
+        elif tent.get("type") == "livewire_armbrustschuetzen":
+            try:
+                current = armbrustschuetzen.check_armbrustschuetzen()
+            except RuntimeError as ex:
+                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                print(f"  [{tent['name']}] {msg} — übersprungen.")
+                continue
+            except Exception as ex:
+                print(f"  [{tent['name']}] {ex} — übersprungen.")
+                continue
+            cache = current
         else:
             print(f"  {tent['name']} …", end=" ", flush=True)
             try:
@@ -464,6 +482,17 @@ def main():
             elif tent.get("type") == "livewire_hacker":
                 try:
                     current = hacker.check_hacker()
+                except RuntimeError as ex:
+                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                    print(f"  [{tent['name']}] {msg} — übersprungen.")
+                    continue
+                except Exception as ex:
+                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+                    continue
+                cache = current
+            elif tent.get("type") == "livewire_armbrustschuetzen":
+                try:
+                    current = armbrustschuetzen.check_armbrustschuetzen()
                 except RuntimeError as ex:
                     msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
                     print(f"  [{tent['name']}] {msg} — übersprungen.")
