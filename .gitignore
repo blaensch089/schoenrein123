@@ -50,3 +50,6 @@ screenshots/
 # Weitere Recherche-HTML-Mitschnitte (Hacker und künftige Livewire-Zelte)
 *_reservierung.html
 *_response.html
+
+# Diagnose-Skripte (lokal zum Debuggen, nicht ins Repo)
+diagnostics/

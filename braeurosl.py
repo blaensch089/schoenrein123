@@ -4,12 +4,18 @@ check_braeurosl() → {uid: slot_dict}, kompatibel mit bot.py run_check().
 
 UID-Format: braeurosl_{datum}_{area_id}_{startzeit_hhmm}
 
-Sitzplan-Bereiche aus Recherche (Mai 2026): alle 10 Daten haben
-konstant dieselben 4 Areas (629/630/632/634). seatplan_area SELECT
-erscheint erst nach zwei POSTs (date + booking_list_id), daher werden
-bekannte Areas per Fallback eingesetzt.
+DYNAMISCHE Area-Extraktion: Pro Datum werden zwei Livewire-POSTs gemacht.
+Der erste setzt das Datum (→ booking_list_id-SELECT). Der zweite setzt die
+booking_list_id (→ seatplan_area_id-SELECT mit allen verfügbaren Bereichen).
+Damit erkennt der Bot automatisch jeden Bereich, der gerade frei ist, ohne
+hardcoded Liste.
 
-Schichtzeit: 11:00–16:45 Uhr (Mittag, konsistent laut Phantom-Check).
+Pro Datum wird ein frischer GET geholt, um den Livewire-Snapshot sauber zu
+halten (sonst klebt der booking_list_id-State vom vorigen Datum drin).
+
+Schichtzeit-Default: 11:00–16:45 (Mittag). Bräurosl 2026 hat ausschließlich
+diese Schicht. Falls jemals andere Schichten erscheinen, wird der Schichtname
+im Log sichtbar.
 """
 import html as htmllib
 import re
@@ -26,13 +32,7 @@ _UA          = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 _MUNICH_TZ   = ZoneInfo("Europe/Berlin")
 _POST_DELAY  = 3
 
-# Sitzplan-Bereiche aus Recherche (konstant für Bräurosl Oktoberfest 2026)
-_AREAS = [
-    {"id": "629", "name": "Boxen"},
-    {"id": "630", "name": "Brauerei Box"},
-    {"id": "632", "name": "Mittelschiff Ost"},
-    {"id": "634", "name": "Mittelschiff West"},
-]
+# Schichtzeit-Default. Bräurosl 2026 hat nur "Mittag" 11:00–16:45.
 _DEFAULT_START = "11:00"
 _DEFAULT_END   = "16:45"
 
@@ -76,15 +76,47 @@ def _extract_dates(html):
     return re.findall(r'value="(\d{4}-\d{2}-\d{2})"', block) if block else []
 
 
+def _parse_options(html_frag, select_id):
+    """Robuste Extraktion aller <option>-Tags eines bestimmten SELECTs.
+
+    Vorgehen:
+    1. SELECT-Block per id="..." lokalisieren.
+    2. Alle <option ...>...</option>-Blöcke darin greifen.
+    3. Pro Block: value-Zahl extrahieren, HTML-Kommentare wegputzen,
+       sichtbaren Text zwischen > und </option> als Namen.
+
+    Gibt Liste von (value, name)-Tupeln zurück (ohne leere Platzhalter-Optionen).
+    """
+    select_inner = _find_select(html_frag, select_id)
+    if not select_inner:
+        return []
+
+    results = []
+    for block in re.findall(r'<option\s.*?</option>', select_inner, re.DOTALL):
+        vm = re.search(r'value="(\d+)"', block)
+        if not vm:
+            continue
+        cleaned = re.sub(r'<!--.*?-->', '', block, flags=re.DOTALL)
+        tm = re.search(r'<option\s[^>]*>(.*?)</option>', cleaned, re.DOTALL)
+        if not tm:
+            continue
+        name = tm.group(1).strip()
+        if name:
+            results.append((vm.group(1), name))
+    return results
+
+
 def _extract_bl_options(html_frag):
     """booking_list_id-Optionen (Schicht-Optionen) aus POST-Response-HTML."""
-    block = _find_select(html_frag, "data.createBookingStepOneForm.booking_list_id")
-    if not block:
-        return []
-    return [
-        (bid, name.strip())
-        for bid, name in re.findall(r'value="(\d+)"[^>]*>([^<]+)', block)
-    ]
+    return _parse_options(html_frag, "data.createBookingStepOneForm.booking_list_id")
+
+
+def _extract_area_options(html_frag):
+    """seatplan_area_id-Optionen aus POST-Response-HTML (DYNAMISCH).
+
+    Gibt Liste von (area_id, area_name)-Tupeln zurück.
+    """
+    return _parse_options(html_frag, "data.createBookingStepOneForm.seatplan_area_id")
 
 
 def _to_utc_iso(datum, uhrzeit):
@@ -125,60 +157,89 @@ def _post_livewire(session, snapshot, csrf_token, updates):
     return new_snap, html_frag
 
 
+def _fetch_portal(session):
+    """GET /reservation/ → (csrf_token, snapshot, dates)."""
+    r = session.get(_BOOKING_URL, timeout=20)
+    r.raise_for_status()
+    csrf_token = _extract_csrf(r.text)
+    snapshot   = _extract_portal_snapshot(r.text)
+    dates      = _extract_dates(r.text)
+    if not csrf_token:
+        raise RuntimeError("BRAEUROSL: CSRF-Token nicht im HTML gefunden")
+    if snapshot is None:
+        raise RuntimeError("BRAEUROSL: wire:snapshot nicht im HTML gefunden")
+    return csrf_token, snapshot, dates
+
+
 def check_braeurosl():
     """
     Prüft verfügbare Bräurosl-Slots via Livewire (kein Login nötig).
     Gibt {uid: slot_dict} zurück, kompatibel mit bot.py run_check().
     Wirft RuntimeError("BRAEUROSL_RATELIMIT") bei HTTP 429.
+
+    Pro Datum: frischer GET (sauberer Snapshot), POST 1 (date),
+    POST 2 (booking_list_id) → Areas DYNAMISCH aus Response extrahieren.
     """
     session = _mk_session()
 
     print("  [Bräurosl] GET /reservation/ …", end=" ", flush=True)
-    r0 = session.get(_BOOKING_URL, timeout=20)
-    r0.raise_for_status()
-    print(f"HTTP {r0.status_code}", flush=True)
-
-    csrf_token = _extract_csrf(r0.text)
-    snapshot   = _extract_portal_snapshot(r0.text)
-    dates      = _extract_dates(r0.text)
-
-    if not csrf_token:
-        raise RuntimeError("BRAEUROSL: CSRF-Token nicht im HTML gefunden")
-    if snapshot is None:
-        raise RuntimeError("BRAEUROSL: wire:snapshot nicht im HTML gefunden")
-
-    print(f"  [Bräurosl] {len(dates)} Datum/-Daten im SELECT: {dates}")
+    csrf_token, snapshot, dates = _fetch_portal(session)
+    print(f"{len(dates)} Datum/-Daten: {dates}", flush=True)
 
     slots = {}
 
     for i, datum in enumerate(dates):
+        # Ab dem 2. Datum: frischer GET, damit der Snapshot sauber ist
+        # (sonst klebt der booking_list_id-State vom vorigen Datum drin)
         if i > 0:
             time.sleep(_POST_DELAY)
-        print(f"  [Bräurosl] POST {datum} …", end=" ", flush=True)
+            print(f"  [Bräurosl] GET (refresh) für {datum} …", end=" ", flush=True)
+            csrf_token, snapshot, _ = _fetch_portal(session)
+            print("ok", flush=True)
 
+        # POST 1: Datum setzen → Schicht-Optionen
+        time.sleep(_POST_DELAY)
+        print(f"  [Bräurosl] POST 1 {datum} (date) …", end=" ", flush=True)
         snapshot, html_frag = _post_livewire(
             session, snapshot, csrf_token,
             {"data.createBookingStepOneForm.date": datum},
         )
-
         bl_options = _extract_bl_options(html_frag)
         print(f"{len(bl_options)} Schicht(en)", flush=True)
 
         if not bl_options:
-            print(f"  [Bräurosl] Warnung: {datum} im SELECT, aber keine Schicht-Option in Response")
+            print(f"  [Bräurosl] Warnung: {datum} hat 0 Schichten – überspringe")
             continue
 
-        start_utc = _to_utc_iso(datum, _DEFAULT_START)
-        end_utc   = _to_utc_iso(datum, _DEFAULT_END)
+        # POST 2 pro Schicht: Areas dynamisch holen
+        for bl_id, bl_name in bl_options:
+            time.sleep(_POST_DELAY)
+            print(f"  [Bräurosl] POST 2 {datum} bl_id={bl_id} ({bl_name}) …", end=" ", flush=True)
+            snapshot, html_frag2 = _post_livewire(
+                session, snapshot, csrf_token,
+                {"data.createBookingStepOneForm.booking_list_id": int(bl_id)},
+            )
+            area_options = _extract_area_options(html_frag2)
+            print(f"{len(area_options)} Area(s): {[n for _, n in area_options]}", flush=True)
 
-        for area in _AREAS:
-            uid = f"braeurosl_{datum}_{area['id']}_{_DEFAULT_START.replace(':', '')}"
-            slots[uid] = {
-                "uid":            uid,
-                "name":           f"Bräurosl Mittag {datum} {area['name']}",
-                "date":           datum,
-                "areas":          [{"label": area["name"], "start": start_utc, "end": end_utc}],
-                "earliest_start": start_utc,
-            }
+            if not area_options:
+                print(f"  [Bräurosl] Hinweis: {datum} Schicht '{bl_name}' hat 0 Areas (ausgebucht/gesperrt)")
+                continue
+
+            if "mittag" not in bl_name.lower():
+                print(f"  [Bräurosl] HINWEIS: Schicht '{bl_name}' ist nicht 'Mittag' – Zeit-Default 11:00 stimmt evtl. nicht")
+
+            start_utc = _to_utc_iso(datum, _DEFAULT_START)
+            end_utc   = _to_utc_iso(datum, _DEFAULT_END)
+
+            for area_id, area_name in area_options:
+                uid = f"braeurosl_{datum}_{area_id}_{_DEFAULT_START.replace(':', '')}"
+                slots[uid] = {
+                    "uid":            uid,
+                    "name":           f"Bräurosl {bl_name} {datum} {area_name}",
+                    "date":           datum,
+                    "areas":          [{"label": area_name, "start": start_utc, "end": end_utc}],
+                    "earliest_start": start_utc,
+                }
 
     return slots
