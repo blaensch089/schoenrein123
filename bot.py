@@ -16,6 +16,7 @@ import braeurosl
 import hacker
 import armbrustschuetzen
 import winzerer
+import loewenbraeu
 
 
 def _load_env(path=".env"):
@@ -113,6 +114,12 @@ TENTS = [
         "type":        "livewire_winzerer",
         "name":        "Winzerer Fähndl",
         "booking_url": "https://reservierung.paulanerfestzelt.de/reservierung",
+    },
+    {
+        "id":          "loewenbraeu",
+        "type":        "livewire_loewenbraeu",
+        "name":        "Löwenbräuzelt",
+        "booking_url": "https://reservierung.loewenbraeuzelt.de/reservierung",
     },
 ]
 
@@ -457,6 +464,17 @@ def main():
                 print(f"  [{tent['name']}] {ex} — übersprungen.")
                 continue
             cache = current
+        elif tent.get("type") == "livewire_loewenbraeu":
+            try:
+                current = loewenbraeu.check_loewenbraeu()
+            except RuntimeError as ex:
+                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                print(f"  [{tent['name']}] {msg} — übersprungen.")
+                continue
+            except Exception as ex:
+                print(f"  [{tent['name']}] {ex} — übersprungen.")
+                continue
+            cache = current
         else:
             print(f"  {tent['name']} …", end=" ", flush=True)
             try:
@@ -522,6 +540,17 @@ def main():
             elif tent.get("type") == "livewire_winzerer":
                 try:
                     current = winzerer.check_winzerer()
+                except RuntimeError as ex:
+                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+                    print(f"  [{tent['name']}] {msg} — übersprungen.")
+                    continue
+                except Exception as ex:
+                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+                    continue
+                cache = current
+            elif tent.get("type") == "livewire_loewenbraeu":
+                try:
+                    current = loewenbraeu.check_loewenbraeu()
                 except RuntimeError as ex:
                     msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
                     print(f"  [{tent['name']}] {msg} — übersprungen.")
