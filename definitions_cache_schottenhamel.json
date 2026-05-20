@@ -7,41 +7,13 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 89,
-        "label": "Brauerei Boxe",
-        "start": "2026-09-20T08:30:00+00:00",
-        "end": "2026-09-20T12:15:00+00:00"
-      },
-      {
-        "id": 92,
-        "label": "Traditionsboxe",
-        "start": "2026-09-20T08:30:00+00:00",
-        "end": "2026-09-20T12:15:00+00:00"
-      },
-      {
         "id": 94,
         "label": "Bavaria Boxe",
         "start": "2026-09-20T09:00:00+00:00",
         "end": "2026-09-20T12:30:00+00:00"
       }
     ],
-    "earliest_start": "2026-09-20T08:30:00+00:00"
-  },
-  "1CL82PX": {
-    "uid": "1CL82PX",
-    "name": "1. Sonntag, 20.09.2026 - Nachmittag",
-    "date": "2026-09-20",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 95,
-        "label": "Prinzregenten Boxe",
-        "start": "2026-09-20T12:45:00+00:00",
-        "end": "2026-09-20T16:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-20T12:45:00+00:00"
+    "earliest_start": "2026-09-20T09:00:00+00:00"
   },
   "NXUZF4B": {
     "uid": "NXUZF4B",
@@ -387,22 +359,6 @@
     ],
     "earliest_start": "2026-09-23T09:30:00+00:00"
   },
-  "GGFESMA": {
-    "uid": "GGFESMA",
-    "name": "1. Mittwoch, 23.09.2026 - Nachmittag",
-    "date": "2026-09-23",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-23T13:15:00+00:00",
-        "end": "2026-09-23T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-23T13:15:00+00:00"
-  },
   "9GCH6GZ": {
     "uid": "9GCH6GZ",
     "name": "1. Donnerstag, 24.09.2026 - Mittag",
@@ -413,6 +369,12 @@
       {
         "id": 87,
         "label": "Halle Süd/Mitte",
+        "start": "2026-09-24T10:00:00+00:00",
+        "end": "2026-09-24T13:30:00+00:00"
+      },
+      {
+        "id": 91,
+        "label": "Hallenboxe",
         "start": "2026-09-24T10:00:00+00:00",
         "end": "2026-09-24T13:30:00+00:00"
       },
@@ -627,12 +589,6 @@
         "end": "2026-09-28T16:15:00+00:00"
       },
       {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
-      },
-      {
         "id": 89,
         "label": "Brauerei Boxe",
         "start": "2026-09-28T13:15:00+00:00",
@@ -785,12 +741,6 @@
         "end": "2026-09-29T16:15:00+00:00"
       },
       {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-09-29T13:00:00+00:00",
-        "end": "2026-09-29T16:15:00+00:00"
-      },
-      {
         "id": 97,
         "label": "Viktualienboxe",
         "start": "2026-09-29T13:00:00+00:00",
@@ -846,24 +796,6 @@
     "shift_label": "Nachmittag",
     "shift_id": 20,
     "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-30T13:15:00+00:00",
-        "end": "2026-09-30T16:30:00+00:00"
-      },
-      {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-09-30T13:15:00+00:00",
-        "end": "2026-09-30T16:30:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-30T13:15:00+00:00",
-        "end": "2026-09-30T16:15:00+00:00"
-      },
       {
         "id": 89,
         "label": "Brauerei Boxe",
@@ -1001,34 +933,6 @@
     ],
     "earliest_start": "2026-10-02T08:30:00+00:00"
   },
-  "FFZQADL": {
-    "uid": "FFZQADL",
-    "name": "2. Freitag, 02.10.2026 - Nachmittag",
-    "date": "2026-10-02",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 96,
-        "label": "Wirtsbuden Boxe",
-        "start": "2026-10-02T12:45:00+00:00",
-        "end": "2026-10-02T16:00:00+00:00"
-      },
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-10-02T13:15:00+00:00",
-        "end": "2026-10-02T16:30:00+00:00"
-      },
-      {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-10-02T12:45:00+00:00",
-        "end": "2026-10-02T16:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-02T12:45:00+00:00"
-  },
   "PV38RS8": {
     "uid": "PV38RS8",
     "name": "3. Sonntag, 04.10.2026 - Mittag",
@@ -1053,12 +957,6 @@
         "label": "Wirtsbuden Boxe",
         "start": "2026-10-04T08:30:00+00:00",
         "end": "2026-10-04T12:15:00+00:00"
-      },
-      {
-        "id": 100,
-        "label": "Halle Nord",
-        "start": "2026-10-04T09:00:00+00:00",
-        "end": "2026-10-04T13:00:00+00:00"
       }
     ],
     "earliest_start": "2026-10-04T08:30:00+00:00"
