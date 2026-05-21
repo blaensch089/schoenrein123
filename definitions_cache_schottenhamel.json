@@ -1,20 +1,4 @@
 {
-  "ASAGWCE": {
-    "uid": "ASAGWCE",
-    "name": "1. Sonntag, 20.09.2026 - Mittag",
-    "date": "2026-09-20",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 94,
-        "label": "Bavaria Boxe",
-        "start": "2026-09-20T09:00:00+00:00",
-        "end": "2026-09-20T12:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-20T09:00:00+00:00"
-  },
   "NXUZF4B": {
     "uid": "NXUZF4B",
     "name": "1. Montag, 21.09.2026 - Mittag",
@@ -113,6 +97,12 @@
       {
         "id": 98,
         "label": "Balkon",
+        "start": "2026-09-21T13:15:00+00:00",
+        "end": "2026-09-21T16:15:00+00:00"
+      },
+      {
+        "id": 88,
+        "label": "Münchner Kindl Boxe",
         "start": "2026-09-21T13:15:00+00:00",
         "end": "2026-09-21T16:15:00+00:00"
       }
@@ -435,27 +425,30 @@
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
   },
+  "YQKXBK1": {
+    "uid": "YQKXBK1",
+    "name": "1. Freitag, 25.09.2026 - Mittag",
+    "date": "2026-09-25",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 92,
+        "label": "Traditionsboxe",
+        "start": "2026-09-25T08:30:00+00:00",
+        "end": "2026-09-25T12:15:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-25T08:30:00+00:00"
+  },
   "LCP4KC4": {
     "uid": "LCP4KC4",
     "name": "2. Sonntag, 27.09.2026 - Mittag",
     "date": "2026-09-27",
     "shift_label": "Mittag",
     "shift_id": 19,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-27T08:30:00+00:00",
-        "end": "2026-09-27T12:15:00+00:00"
-      },
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-27T09:00:00+00:00",
-        "end": "2026-09-27T12:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-27T08:30:00+00:00"
+    "areas": [],
+    "earliest_start": null
   },
   "MPPWW6M": {
     "uid": "MPPWW6M",
@@ -867,6 +860,12 @@
         "end": "2026-10-01T12:30:00+00:00"
       },
       {
+        "id": 96,
+        "label": "Wirtsbuden Boxe",
+        "start": "2026-10-01T09:30:00+00:00",
+        "end": "2026-10-01T12:30:00+00:00"
+      },
+      {
         "id": 98,
         "label": "Balkon",
         "start": "2026-10-01T09:30:00+00:00",
@@ -923,12 +922,6 @@
         "label": "Galerie",
         "start": "2026-10-02T09:00:00+00:00",
         "end": "2026-10-02T12:30:00+00:00"
-      },
-      {
-        "id": 100,
-        "label": "Halle Nord",
-        "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T13:00:00+00:00"
       }
     ],
     "earliest_start": "2026-10-02T08:30:00+00:00"
@@ -940,12 +933,6 @@
     "shift_label": "Mittag",
     "shift_id": 19,
     "areas": [
-      {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-10-04T09:00:00+00:00",
-        "end": "2026-10-04T12:30:00+00:00"
-      },
       {
         "id": 94,
         "label": "Bavaria Boxe",
