@@ -139,6 +139,33 @@ TENTS = [
 
 INITIAL_BURST_THRESHOLD = 10
 
+# ── Livewire-Checker-Registry ───────────────────────────────────────────────
+LIVEWIRE_CHECKERS = {
+    "livewire_braeurosl":         braeurosl.check_braeurosl,
+    "livewire_hacker":            hacker.check_hacker,
+    "livewire_armbrustschuetzen": armbrustschuetzen.check_armbrustschuetzen,
+    "livewire_winzerer":          winzerer.check_winzerer,
+    "livewire_loewenbraeu":       loewenbraeu.check_loewenbraeu,
+    "livewire_ochsenbraterei":    ochsenbraterei.check_ochsenbraterei,
+    "livewire_fischer_vroni":     fischer_vroni.check_fischer_vroni,
+}
+
+
+def _check_livewire_tent(tent):
+    """Ruft den passenden Livewire-Checker auf.
+    Rückgabe: Schicht-Dict bei Erfolg, oder None wenn das Zelt
+    übersprungen werden soll (Fehler/Rate-limit)."""
+    checker = LIVEWIRE_CHECKERS[tent["type"]]
+    try:
+        return checker()
+    except RuntimeError as ex:
+        msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
+        print(f"  [{tent['name']}] {msg} — übersprungen.")
+        return None
+    except Exception as ex:
+        print(f"  [{tent['name']}] {ex} — übersprungen.")
+        return None
+
 
 # ── Zeitzone / Filter ──────────────────────────────────────────────────────────
 def to_munich(iso_utc):
@@ -434,81 +461,9 @@ def main():
         if i > 0:
             time.sleep(TENT_DELAY)
         tid = tent["id"]
-        if tent.get("type") == "livewire_braeurosl":
-            try:
-                current = braeurosl.check_braeurosl()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_hacker":
-            try:
-                current = hacker.check_hacker()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_armbrustschuetzen":
-            try:
-                current = armbrustschuetzen.check_armbrustschuetzen()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_winzerer":
-            try:
-                current = winzerer.check_winzerer()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_loewenbraeu":
-            try:
-                current = loewenbraeu.check_loewenbraeu()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_ochsenbraterei":
-            try:
-                current = ochsenbraterei.check_ochsenbraterei()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
-                continue
-            cache = current
-        elif tent.get("type") == "livewire_fischer_vroni":
-            try:
-                current = fischer_vroni.check_fischer_vroni()
-            except RuntimeError as ex:
-                msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                print(f"  [{tent['name']}] {msg} — übersprungen.")
-                continue
-            except Exception as ex:
-                print(f"  [{tent['name']}] {ex} — übersprungen.")
+        if tent.get("type") in LIVEWIRE_CHECKERS:
+            current = _check_livewire_tent(tent)
+            if current is None:
                 continue
             cache = current
         else:
@@ -540,81 +495,9 @@ def main():
             if i > 0:
                 time.sleep(TENT_DELAY)
             tid = tent["id"]
-            if tent.get("type") == "livewire_braeurosl":
-                try:
-                    current = braeurosl.check_braeurosl()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_hacker":
-                try:
-                    current = hacker.check_hacker()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_armbrustschuetzen":
-                try:
-                    current = armbrustschuetzen.check_armbrustschuetzen()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_winzerer":
-                try:
-                    current = winzerer.check_winzerer()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_loewenbraeu":
-                try:
-                    current = loewenbraeu.check_loewenbraeu()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_ochsenbraterei":
-                try:
-                    current = ochsenbraterei.check_ochsenbraterei()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
-                    continue
-                cache = current
-            elif tent.get("type") == "livewire_fischer_vroni":
-                try:
-                    current = fischer_vroni.check_fischer_vroni()
-                except RuntimeError as ex:
-                    msg = "Rate-limit" if "RATELIMIT" in str(ex) else str(ex)
-                    print(f"  [{tent['name']}] {msg} — übersprungen.")
-                    continue
-                except Exception as ex:
-                    print(f"  [{tent['name']}] {ex} — übersprungen.")
+            if tent.get("type") in LIVEWIRE_CHECKERS:
+                current = _check_livewire_tent(tent)
+                if current is None:
                     continue
                 cache = current
             else:
