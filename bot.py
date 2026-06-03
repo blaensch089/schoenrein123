@@ -181,7 +181,7 @@ def classify(earliest_start_utc):
     hour = dt.hour + dt.minute / 60
     if hour >= 17:
         return "evening"
-    if 13 <= hour < 17 and dt.weekday() in (4, 5, 6):
+    if 12 <= hour < 17 and dt.weekday() in (4, 5, 6):
         return "afternoon"
     return None
 

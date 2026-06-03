@@ -2,14 +2,18 @@
 Hacker Festzelt Livewire-Checker für den Wiesn-Bot.
 check_hacker() → {uid: slot_dict}, kompatibel mit bot.py run_check().
 
-UID-Format: hacker_{datum}_{area_id}_{startzeit_hhmm}
+UID-Format: hacker_{datum}_{booking_list_id}_{area_id}
 
-booking_list_group_id=55 liegt fest im Livewire-Snapshot.
+Variante (Tag 14, 03.06.2026 verifiziert): MISCHFORM
+  POST 1 (Datum)  → booking_list_id-Dropdown (Schichten, z.B. 1679 = "Mittag")
+  POST 2 (Schicht)→ seatplan_area_id-Dropdown (Bereiche, dynamisch ausgelesen)
 Reservierungs-URL: /reservierung (nicht /reservation/ wie bei Bräurosl)
 
-TODO (nach Münchner-Kontingent-Vergabe 19.05.2026 ab 10:00 Uhr):
-  KNOWN_AREAS mit echten Area-IDs und -Namen aus dem Portal befüllen.
-  Bis dahin liefert check_hacker() 0 Slots → keine Pushes.
+Bereiche werden DYNAMISCH aus der POST-2-Response gelesen (kein KNOWN_AREAS mehr) —
+so werden auch Storno-Slots für bereits gebuchte Bereiche erfasst.
+Die <option>-Tags stecken in Livewire-Kommentaren (<!--[if BLOCK]>-->) und über
+mehrere Zeilen — daher zweistufiges Parsen (_parse_options): erst Kommentare
+entfernen, dann value+Text auslesen.
 """
 import html as htmllib
 import re
@@ -26,11 +30,13 @@ _UA          = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 _MUNICH_TZ   = ZoneInfo("Europe/Berlin")
 _POST_DELAY  = 3
 
-# TODO: nach Kontingent-Vergabe 19.05.2026 befüllen (Area-IDs aus Portal-Response)
-KNOWN_AREAS = []
-
-_DEFAULT_START = "11:00"
-_DEFAULT_END   = "22:00"  # Hacker: Abendschichten möglich — Fallback bis Recherche
+# Schicht-Zeiten-Default (Münchner Zeit). Start steuert den Push-Filter:
+#   Mittag-Start 12:00 → "afternoon" → Push nur Fr/Sa/So
+#   Abend-Start  17:00 → "evening"   → Push jeden Tag
+_MITTAG_START = "12:00"
+_MITTAG_END   = "16:45"
+_ABEND_START  = "17:00"
+_ABEND_END    = "22:30"
 
 
 def _mk_session():
@@ -49,6 +55,21 @@ def _find_select(html, field_id):
         html, re.DOTALL | re.IGNORECASE,
     )
     return m.group(1) if m else ""
+
+
+def _parse_options(select_inner_html):
+    """Zweistufig: Livewire-Kommentare entfernen, dann (value, name) je <option>.
+    Leere Platzhalter-Option (value="") und leere Namen werden übersprungen."""
+    clean = re.sub(r'<!--\[if [^\]]*\]><!\[endif\]-->', '', select_inner_html)
+    out = []
+    for val, inner in re.findall(
+        r'<option[^>]*\svalue="([^"]*)"[^>]*>(.*?)</option>',
+        clean, re.DOTALL,
+    ):
+        name = htmllib.unescape(re.sub(r'<[^>]+>', '', inner)).strip()
+        if val.strip() and name:
+            out.append((val.strip(), name))
+    return out
 
 
 def _extract_csrf(html):
@@ -70,25 +91,25 @@ def _extract_dates(html):
 
 
 def _extract_bl_options(html_frag):
-    block = _find_select(html_frag, "data.createBookingStepOneForm.booking_list_id")
-    if not block:
-        return []
-    return [
-        (bid, name.strip())
-        for bid, name in re.findall(r'value="(\d+)"[^>]*>([^<]+)', block)
-    ]
+    """Schichten (booking_list_id) aus POST-1-Response. (bl_id, name)-Tupel."""
+    return _parse_options(_find_select(html_frag, "data.createBookingStepOneForm.booking_list_id"))
 
 
 def _extract_areas(html_frag):
-    """Seatplan-Areas aus POST-Response-HTML (nach Freischaltung verfügbar)."""
-    block = _find_select(html_frag, "data.createBookingStepOneForm.seatplan_area_id")
-    if not block:
-        return []
+    """Bereiche (seatplan_area_id) aus POST-2-Response. Liste von {id, name}."""
     return [
-        {"id": aid, "name": name.strip()}
-        for aid, name in re.findall(r'value="(\d+)"[^>]*>([^<\n]+)', block)
-        if aid and name.strip()
+        {"id": aid, "name": name}
+        for aid, name in _parse_options(
+            _find_select(html_frag, "data.createBookingStepOneForm.seatplan_area_id")
+        )
     ]
+
+
+def _shift_times(shift_name):
+    """Default-Zeiten je Schicht. 'mittag' → 12:00–16:45, sonst → 17:00–22:30."""
+    if "mittag" in shift_name.lower():
+        return _MITTAG_START, _MITTAG_END
+    return _ABEND_START, _ABEND_END
 
 
 def _to_utc_iso(datum, uhrzeit):
@@ -133,8 +154,8 @@ def check_hacker():
     Gibt {uid: slot_dict} zurück, kompatibel mit bot.py run_check().
     Wirft RuntimeError("HACKER_RATELIMIT") bei HTTP 429.
 
-    Solange KNOWN_AREAS leer ist (TODO noch offen), werden 0 Slots
-    zurückgegeben — kein Push, aber Datum-SELECT wird bereits geloggt.
+    Ablauf pro Datum: POST 1 (Datum) → Schichten; je Schicht POST 2 → Bereiche
+    dynamisch. Pro (Datum, Schicht, Bereich) eine UID.
     """
     session = _mk_session()
 
@@ -143,54 +164,58 @@ def check_hacker():
     r0.raise_for_status()
     print(f"HTTP {r0.status_code}", flush=True)
 
-    csrf_token = _extract_csrf(r0.text)
-    snapshot   = _extract_portal_snapshot(r0.text)
-    dates      = _extract_dates(r0.text)
+    csrf_token    = _extract_csrf(r0.text)
+    base_snapshot = _extract_portal_snapshot(r0.text)
+    dates         = _extract_dates(r0.text)
 
     if not csrf_token:
         raise RuntimeError("HACKER: CSRF-Token nicht im HTML gefunden")
-    if snapshot is None:
+    if base_snapshot is None:
         raise RuntimeError("HACKER: wire:snapshot nicht im HTML gefunden")
-
     if not dates:
-        print("  [Hacker] 0 Daten im SELECT — Portal noch gesperrt (Vergabe 19.05.2026)")
+        print("  [Hacker] 0 Daten im SELECT — Portal noch gesperrt")
         return {}
 
     print(f"  [Hacker] {len(dates)} Datum/-Daten im SELECT: {dates}")
 
-    if not KNOWN_AREAS:
-        print(f"  [Hacker] {len(dates)} Daten gefunden, aber KNOWN_AREAS leer — TODO offen")
-        return {}
-
     slots = {}
-
     for i, datum in enumerate(dates):
         if i > 0:
             time.sleep(_POST_DELAY)
         print(f"  [Hacker] POST {datum} …", end=" ", flush=True)
-
-        snapshot, html_frag = _post_livewire(
-            session, snapshot, csrf_token,
+        snap1, html1 = _post_livewire(
+            session, base_snapshot, csrf_token,
             {"data.createBookingStepOneForm.date": datum},
         )
-
-        bl_options = _extract_bl_options(html_frag)
-        print(f"{len(bl_options)} Schicht(en)", flush=True)
-
-        if not bl_options:
+        shifts = _extract_bl_options(html1)
+        print(f"{len(shifts)} Schicht(en)", flush=True)
+        if not shifts:
             continue
 
-        start_utc = _to_utc_iso(datum, _DEFAULT_START)
-        end_utc   = _to_utc_iso(datum, _DEFAULT_END)
+        for bl_id, shift_name in shifts:
+            time.sleep(_POST_DELAY)
+            print(f"  [Hacker]   POST Schicht '{shift_name}' …", end=" ", flush=True)
+            _snap2, html2 = _post_livewire(
+                session, snap1, csrf_token,
+                {"data.createBookingStepOneForm.booking_list_id": bl_id},
+            )
+            areas = _extract_areas(html2)
+            print(f"{len(areas)} Bereich(e)", flush=True)
+            if not areas:
+                continue
 
-        for area in KNOWN_AREAS:
-            uid = f"hacker_{datum}_{area['id']}_{_DEFAULT_START.replace(':', '')}"
-            slots[uid] = {
-                "uid":            uid,
-                "name":           f"Hacker {datum} {area['name']}",
-                "date":           datum,
-                "areas":          [{"label": area["name"], "start": start_utc, "end": end_utc}],
-                "earliest_start": start_utc,
-            }
+            start_hhmm, end_hhmm = _shift_times(shift_name)
+            start_utc = _to_utc_iso(datum, start_hhmm)
+            end_utc   = _to_utc_iso(datum, end_hhmm)
+
+            for area in areas:
+                uid = f"hacker_{datum}_{bl_id}_{area['id']}"
+                slots[uid] = {
+                    "uid":            uid,
+                    "name":           f"Hacker {datum} {shift_name} – {area['name']}",
+                    "date":           datum,
+                    "areas":          [{"label": area["name"], "start": start_utc, "end": end_utc}],
+                    "earliest_start": start_utc,
+                }
 
     return slots
