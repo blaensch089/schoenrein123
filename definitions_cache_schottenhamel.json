@@ -501,22 +501,6 @@
     ],
     "earliest_start": "2026-09-28T09:30:00+00:00"
   },
-  "F4DPXZF": {
-    "uid": "F4DPXZF",
-    "name": "2. Montag, 28.09.2026 - Nachmittag",
-    "date": "2026-09-28",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-28T13:15:00+00:00"
-  },
   "H485MY6": {
     "uid": "H485MY6",
     "name": "2. Dienstag, 29.09.2026 - Mittag",
