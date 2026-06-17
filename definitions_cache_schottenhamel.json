@@ -1,4 +1,20 @@
 {
+  "1CL82PX": {
+    "uid": "1CL82PX",
+    "name": "1. Sonntag, 20.09.2026 - Nachmittag",
+    "date": "2026-09-20",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-09-20T13:15:00+00:00",
+        "end": "2026-09-20T16:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-20T13:15:00+00:00"
+  },
   "NXUZF4B": {
     "uid": "NXUZF4B",
     "name": "1. Montag, 21.09.2026 - Mittag",
@@ -309,22 +325,6 @@
     ],
     "earliest_start": "2026-09-23T09:30:00+00:00"
   },
-  "GGFESMA": {
-    "uid": "GGFESMA",
-    "name": "1. Mittwoch, 23.09.2026 - Nachmittag",
-    "date": "2026-09-23",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 96,
-        "label": "Wirtsbuden Boxe",
-        "start": "2026-09-23T13:00:00+00:00",
-        "end": "2026-09-23T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-23T13:00:00+00:00"
-  },
   "9GCH6GZ": {
     "uid": "9GCH6GZ",
     "name": "1. Donnerstag, 24.09.2026 - Mittag",
@@ -332,12 +332,6 @@
     "shift_label": "Mittag",
     "shift_id": 19,
     "areas": [
-      {
-        "id": 87,
-        "label": "Halle Süd/Mitte",
-        "start": "2026-09-24T10:00:00+00:00",
-        "end": "2026-09-24T13:30:00+00:00"
-      },
       {
         "id": 90,
         "label": "Hausboxe",
