@@ -87,22 +87,6 @@
     ],
     "earliest_start": "2026-09-21T09:30:00+00:00"
   },
-  "D4V8NMG": {
-    "uid": "D4V8NMG",
-    "name": "1. Montag, 21.09.2026 - Nachmittag",
-    "date": "2026-09-21",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-21T13:15:00+00:00",
-        "end": "2026-09-21T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-21T13:15:00+00:00"
-  },
   "PUUH5QK": {
     "uid": "PUUH5QK",
     "name": "1. Dienstag, 22.09.2026 - Mittag",
@@ -211,10 +195,10 @@
     "shift_id": 20,
     "areas": [
       {
-        "id": 98,
-        "label": "Balkon",
+        "id": 99,
+        "label": "Galerie",
         "start": "2026-09-22T13:15:00+00:00",
-        "end": "2026-09-22T16:15:00+00:00"
+        "end": "2026-09-22T16:30:00+00:00"
       }
     ],
     "earliest_start": "2026-09-22T13:15:00+00:00"
@@ -388,28 +372,6 @@
       }
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
-  },
-  "TVL5BX3": {
-    "uid": "TVL5BX3",
-    "name": "2. Sonntag, 27.09.2026 - Nachmittag",
-    "date": "2026-09-27",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 95,
-        "label": "Prinzregenten Boxe",
-        "start": "2026-09-27T12:45:00+00:00",
-        "end": "2026-09-27T16:00:00+00:00"
-      },
-      {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-09-27T12:45:00+00:00",
-        "end": "2026-09-27T16:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-27T12:45:00+00:00"
   },
   "MPPWW6M": {
     "uid": "MPPWW6M",
@@ -605,22 +567,6 @@
     ],
     "earliest_start": "2026-09-29T09:30:00+00:00"
   },
-  "ZLT6U6K": {
-    "uid": "ZLT6U6K",
-    "name": "2. Dienstag, 29.09.2026 - Nachmittag",
-    "date": "2026-09-29",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-29T13:15:00+00:00",
-        "end": "2026-09-29T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-29T13:15:00+00:00"
-  },
   "PCE2351": {
     "uid": "PCE2351",
     "name": "2. Mittwoch, 30.09.2026 - Mittag",
@@ -748,5 +694,43 @@
       }
     ],
     "earliest_start": "2026-10-01T09:30:00+00:00"
+  },
+  "G29ETMZ": {
+    "uid": "G29ETMZ",
+    "name": "2. Freitag, 02.10.2026 - Mittag",
+    "date": "2026-10-02",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 90,
+        "label": "Hausboxe",
+        "start": "2026-10-02T09:00:00+00:00",
+        "end": "2026-10-02T12:30:00+00:00"
+      },
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-10-02T09:00:00+00:00",
+        "end": "2026-10-02T12:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-10-02T09:00:00+00:00"
+  },
+  "PV38RS8": {
+    "uid": "PV38RS8",
+    "name": "3. Sonntag, 04.10.2026 - Mittag",
+    "date": "2026-10-04",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 90,
+        "label": "Hausboxe",
+        "start": "2026-10-04T09:00:00+00:00",
+        "end": "2026-10-04T12:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-10-04T09:00:00+00:00"
   }
 }
