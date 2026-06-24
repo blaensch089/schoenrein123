@@ -43,6 +43,12 @@
         "end": "2026-09-21T12:30:00+00:00"
       },
       {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-21T09:30:00+00:00",
+        "end": "2026-09-21T12:30:00+00:00"
+      },
+      {
         "id": 94,
         "label": "Bavaria Boxe",
         "start": "2026-09-21T09:30:00+00:00",
@@ -286,22 +292,6 @@
       }
     ],
     "earliest_start": "2026-09-23T09:30:00+00:00"
-  },
-  "GGFESMA": {
-    "uid": "GGFESMA",
-    "name": "1. Mittwoch, 23.09.2026 - Nachmittag",
-    "date": "2026-09-23",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-09-23T13:00:00+00:00",
-        "end": "2026-09-23T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-23T13:00:00+00:00"
   },
   "9GCH6GZ": {
     "uid": "9GCH6GZ",
