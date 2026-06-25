@@ -193,6 +193,22 @@
     ],
     "earliest_start": "2026-09-22T09:30:00+00:00"
   },
+  "M7U2N61": {
+    "uid": "M7U2N61",
+    "name": "1. Dienstag, 22.09.2026 - Nachmittag",
+    "date": "2026-09-22",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-09-22T13:15:00+00:00",
+        "end": "2026-09-22T16:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-22T13:15:00+00:00"
+  },
   "FLP55A4": {
     "uid": "FLP55A4",
     "name": "1. Mittwoch, 23.09.2026 - Mittag",
@@ -457,6 +473,22 @@
     ],
     "earliest_start": "2026-09-28T09:30:00+00:00"
   },
+  "F4DPXZF": {
+    "uid": "F4DPXZF",
+    "name": "2. Montag, 28.09.2026 - Nachmittag",
+    "date": "2026-09-28",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 94,
+        "label": "Bavaria Boxe",
+        "start": "2026-09-28T13:15:00+00:00",
+        "end": "2026-09-28T16:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-28T13:15:00+00:00"
+  },
   "H485MY6": {
     "uid": "H485MY6",
     "name": "2. Dienstag, 29.09.2026 - Mittag",
@@ -481,6 +513,12 @@
         "label": "Viktualienboxe",
         "start": "2026-09-29T09:30:00+00:00",
         "end": "2026-09-29T12:30:00+00:00"
+      },
+      {
+        "id": 90,
+        "label": "Hausboxe",
+        "start": "2026-09-29T09:30:00+00:00",
+        "end": "2026-09-29T12:45:00+00:00"
       },
       {
         "id": 89,
@@ -678,21 +716,5 @@
       }
     ],
     "earliest_start": "2026-10-01T09:30:00+00:00"
-  },
-  "G29ETMZ": {
-    "uid": "G29ETMZ",
-    "name": "2. Freitag, 02.10.2026 - Mittag",
-    "date": "2026-10-02",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T12:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-02T09:00:00+00:00"
   }
 }
