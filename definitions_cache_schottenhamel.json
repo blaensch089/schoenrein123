@@ -323,12 +323,6 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 87,
-        "label": "Halle Süd/Mitte",
-        "start": "2026-09-24T10:00:00+00:00",
-        "end": "2026-09-24T13:30:00+00:00"
-      },
-      {
         "id": 91,
         "label": "Hallenboxe",
         "start": "2026-09-24T10:00:00+00:00",
@@ -625,6 +619,22 @@
     ],
     "earliest_start": "2026-09-29T09:30:00+00:00"
   },
+  "ZLT6U6K": {
+    "uid": "ZLT6U6K",
+    "name": "2. Dienstag, 29.09.2026 - Nachmittag",
+    "date": "2026-09-29",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 89,
+        "label": "Brauerei Boxe",
+        "start": "2026-09-29T13:15:00+00:00",
+        "end": "2026-09-29T16:15:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-29T13:15:00+00:00"
+  },
   "PCE2351": {
     "uid": "PCE2351",
     "name": "2. Mittwoch, 30.09.2026 - Mittag",
@@ -670,22 +680,6 @@
       }
     ],
     "earliest_start": "2026-09-30T09:30:00+00:00"
-  },
-  "7EQXM7Y": {
-    "uid": "7EQXM7Y",
-    "name": "2. Mittwoch, 30.09.2026 - Nachmittag",
-    "date": "2026-09-30",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-30T13:15:00+00:00",
-        "end": "2026-09-30T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-30T13:15:00+00:00"
   },
   "6LZMCCZ": {
     "uid": "6LZMCCZ",
@@ -781,34 +775,6 @@
     ],
     "earliest_start": "2026-10-01T09:30:00+00:00"
   },
-  "G29ETMZ": {
-    "uid": "G29ETMZ",
-    "name": "2. Freitag, 02.10.2026 - Mittag",
-    "date": "2026-10-02",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-10-02T08:30:00+00:00",
-        "end": "2026-10-02T12:15:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-10-02T08:30:00+00:00",
-        "end": "2026-10-02T12:15:00+00:00"
-      },
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T12:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-02T08:30:00+00:00"
-  },
   "PV38RS8": {
     "uid": "PV38RS8",
     "name": "3. Sonntag, 04.10.2026 - Mittag",
@@ -816,6 +782,12 @@
     "shift_label": "Mittag",
     "shift_id": 19,
     "areas": [
+      {
+        "id": 91,
+        "label": "Hallenboxe",
+        "start": "2026-10-04T09:00:00+00:00",
+        "end": "2026-10-04T13:30:00+00:00"
+      },
       {
         "id": 96,
         "label": "Wirtsbuden Boxe",
