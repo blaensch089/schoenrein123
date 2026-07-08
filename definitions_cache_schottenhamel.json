@@ -1,4 +1,20 @@
 {
+  "ASAGWCE": {
+    "uid": "ASAGWCE",
+    "name": "1. Sonntag, 20.09.2026 - Mittag",
+    "date": "2026-09-20",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-09-20T09:00:00+00:00",
+        "end": "2026-09-20T12:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-20T09:00:00+00:00"
+  },
   "NXUZF4B": {
     "uid": "NXUZF4B",
     "name": "1. Montag, 21.09.2026 - Mittag",
@@ -198,28 +214,6 @@
       }
     ],
     "earliest_start": "2026-09-22T09:30:00+00:00"
-  },
-  "M7U2N61": {
-    "uid": "M7U2N61",
-    "name": "1. Dienstag, 22.09.2026 - Nachmittag",
-    "date": "2026-09-22",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-22T13:15:00+00:00",
-        "end": "2026-09-22T16:30:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-22T13:15:00+00:00",
-        "end": "2026-09-22T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-22T13:15:00+00:00"
   },
   "FLP55A4": {
     "uid": "FLP55A4",
@@ -513,28 +507,6 @@
     ],
     "earliest_start": "2026-09-28T09:30:00+00:00"
   },
-  "F4DPXZF": {
-    "uid": "F4DPXZF",
-    "name": "2. Montag, 28.09.2026 - Nachmittag",
-    "date": "2026-09-28",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:30:00+00:00"
-      },
-      {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-28T13:15:00+00:00"
-  },
   "H485MY6": {
     "uid": "H485MY6",
     "name": "2. Dienstag, 29.09.2026 - Mittag",
@@ -634,22 +606,6 @@
       }
     ],
     "earliest_start": "2026-09-29T09:30:00+00:00"
-  },
-  "ZLT6U6K": {
-    "uid": "ZLT6U6K",
-    "name": "2. Dienstag, 29.09.2026 - Nachmittag",
-    "date": "2026-09-29",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 89,
-        "label": "Brauerei Boxe",
-        "start": "2026-09-29T13:15:00+00:00",
-        "end": "2026-09-29T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-29T13:15:00+00:00"
   },
   "PCE2351": {
     "uid": "PCE2351",
@@ -799,13 +755,19 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T12:30:00+00:00"
+        "id": 95,
+        "label": "Prinzregenten Boxe",
+        "start": "2026-10-02T08:30:00+00:00",
+        "end": "2026-10-02T12:15:00+00:00"
+      },
+      {
+        "id": 98,
+        "label": "Balkon",
+        "start": "2026-10-02T08:30:00+00:00",
+        "end": "2026-10-02T12:15:00+00:00"
       }
     ],
-    "earliest_start": "2026-10-02T09:00:00+00:00"
+    "earliest_start": "2026-10-02T08:30:00+00:00"
   },
   "PV38RS8": {
     "uid": "PV38RS8",
@@ -819,6 +781,12 @@
         "label": "Balkon",
         "start": "2026-10-04T08:30:00+00:00",
         "end": "2026-10-04T12:15:00+00:00"
+      },
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-10-04T09:00:00+00:00",
+        "end": "2026-10-04T12:30:00+00:00"
       }
     ],
     "earliest_start": "2026-10-04T08:30:00+00:00"
