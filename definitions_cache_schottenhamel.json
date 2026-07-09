@@ -1,20 +1,4 @@
 {
-  "ASAGWCE": {
-    "uid": "ASAGWCE",
-    "name": "1. Sonntag, 20.09.2026 - Mittag",
-    "date": "2026-09-20",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-20T09:00:00+00:00",
-        "end": "2026-09-20T12:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-20T09:00:00+00:00"
-  },
   "NXUZF4B": {
     "uid": "NXUZF4B",
     "name": "1. Montag, 21.09.2026 - Mittag",
@@ -114,6 +98,22 @@
       }
     ],
     "earliest_start": "2026-09-21T09:30:00+00:00"
+  },
+  "D4V8NMG": {
+    "uid": "D4V8NMG",
+    "name": "1. Montag, 21.09.2026 - Nachmittag",
+    "date": "2026-09-21",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-09-21T13:15:00+00:00",
+        "end": "2026-09-21T16:30:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-21T13:15:00+00:00"
   },
   "PUUH5QK": {
     "uid": "PUUH5QK",
@@ -323,13 +323,19 @@
     "shift_id": 20,
     "areas": [
       {
+        "id": 95,
+        "label": "Prinzregenten Boxe",
+        "start": "2026-09-23T13:00:00+00:00",
+        "end": "2026-09-23T16:15:00+00:00"
+      },
+      {
         "id": 98,
         "label": "Balkon",
         "start": "2026-09-23T13:15:00+00:00",
         "end": "2026-09-23T16:15:00+00:00"
       }
     ],
-    "earliest_start": "2026-09-23T13:15:00+00:00"
+    "earliest_start": "2026-09-23T13:00:00+00:00"
   },
   "9GCH6GZ": {
     "uid": "9GCH6GZ",
@@ -747,28 +753,6 @@
     ],
     "earliest_start": "2026-10-01T09:30:00+00:00"
   },
-  "G29ETMZ": {
-    "uid": "G29ETMZ",
-    "name": "2. Freitag, 02.10.2026 - Mittag",
-    "date": "2026-10-02",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 95,
-        "label": "Prinzregenten Boxe",
-        "start": "2026-10-02T08:30:00+00:00",
-        "end": "2026-10-02T12:15:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-10-02T08:30:00+00:00",
-        "end": "2026-10-02T12:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-02T08:30:00+00:00"
-  },
   "PV38RS8": {
     "uid": "PV38RS8",
     "name": "3. Sonntag, 04.10.2026 - Mittag",
@@ -777,18 +761,12 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-10-04T08:30:00+00:00",
-        "end": "2026-10-04T12:15:00+00:00"
-      },
-      {
         "id": 99,
         "label": "Galerie",
         "start": "2026-10-04T09:00:00+00:00",
         "end": "2026-10-04T12:30:00+00:00"
       }
     ],
-    "earliest_start": "2026-10-04T08:30:00+00:00"
+    "earliest_start": "2026-10-04T09:00:00+00:00"
   }
 }
