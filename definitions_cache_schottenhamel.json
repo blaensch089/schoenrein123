@@ -65,12 +65,6 @@
     "shift_id": 20,
     "areas": [
       {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-20T13:15:00+00:00",
-        "end": "2026-09-20T16:30:00+00:00"
-      },
-      {
         "id": 98,
         "label": "Balkon",
         "start": "2026-09-20T12:45:00+00:00",
@@ -515,12 +509,6 @@
         "end": "2026-09-23T16:15:00+00:00"
       },
       {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-09-23T13:15:00+00:00",
-        "end": "2026-09-23T16:15:00+00:00"
-      },
-      {
         "id": 97,
         "label": "Viktualienboxe",
         "start": "2026-09-23T13:00:00+00:00",
@@ -784,28 +772,6 @@
       }
     ],
     "earliest_start": "2026-09-27T08:30:00+00:00"
-  },
-  "TVL5BX3": {
-    "uid": "TVL5BX3",
-    "name": "2. Sonntag, 27.09.2026 - Nachmittag",
-    "date": "2026-09-27",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-27T13:15:00+00:00",
-        "end": "2026-09-27T16:30:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-27T12:45:00+00:00",
-        "end": "2026-09-27T16:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-27T12:45:00+00:00"
   },
   "MPPWW6M": {
     "uid": "MPPWW6M",
@@ -1293,19 +1259,13 @@
     "shift_id": 20,
     "areas": [
       {
-        "id": 95,
-        "label": "Prinzregenten Boxe",
-        "start": "2026-10-01T13:00:00+00:00",
-        "end": "2026-10-01T16:15:00+00:00"
-      },
-      {
         "id": 88,
         "label": "Münchner Kindl Boxe",
         "start": "2026-10-01T13:15:00+00:00",
         "end": "2026-10-01T16:15:00+00:00"
       }
     ],
-    "earliest_start": "2026-10-01T13:00:00+00:00"
+    "earliest_start": "2026-10-01T13:15:00+00:00"
   },
   "G29ETMZ": {
     "uid": "G29ETMZ",
@@ -1391,12 +1351,6 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 91,
-        "label": "Hallenboxe",
-        "start": "2026-10-04T09:00:00+00:00",
-        "end": "2026-10-04T13:30:00+00:00"
-      },
-      {
         "id": 90,
         "label": "Hausboxe",
         "start": "2026-10-04T09:00:00+00:00",
@@ -1446,21 +1400,5 @@
       }
     ],
     "earliest_start": "2026-10-04T08:30:00+00:00"
-  },
-  "WBEHY1P": {
-    "uid": "WBEHY1P",
-    "name": "3. Sonntag, 04.10.2026 - Nachmittag",
-    "date": "2026-10-04",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-10-04T13:15:00+00:00",
-        "end": "2026-10-04T16:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-04T13:15:00+00:00"
   }
 }
