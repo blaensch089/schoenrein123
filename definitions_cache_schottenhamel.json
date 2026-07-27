@@ -7,12 +7,6 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 91,
-        "label": "Hallenboxe",
-        "start": "2026-09-20T09:00:00+00:00",
-        "end": "2026-09-20T13:30:00+00:00"
-      },
-      {
         "id": 97,
         "label": "Viktualienboxe",
         "start": "2026-09-20T08:30:00+00:00",
@@ -56,22 +50,6 @@
       }
     ],
     "earliest_start": "2026-09-20T08:30:00+00:00"
-  },
-  "1CL82PX": {
-    "uid": "1CL82PX",
-    "name": "1. Sonntag, 20.09.2026 - Nachmittag",
-    "date": "2026-09-20",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-20T12:45:00+00:00",
-        "end": "2026-09-20T16:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-20T12:45:00+00:00"
   },
   "NXUZF4B": {
     "uid": "NXUZF4B",
@@ -378,12 +356,6 @@
         "id": 88,
         "label": "Münchner Kindl Boxe",
         "start": "2026-09-22T13:15:00+00:00",
-        "end": "2026-09-22T16:15:00+00:00"
-      },
-      {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-09-22T13:00:00+00:00",
         "end": "2026-09-22T16:15:00+00:00"
       }
     ],
@@ -893,18 +865,6 @@
         "end": "2026-09-28T16:30:00+00:00"
       },
       {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:30:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
-      },
-      {
         "id": 89,
         "label": "Brauerei Boxe",
         "start": "2026-09-28T13:15:00+00:00",
@@ -1251,22 +1211,6 @@
     ],
     "earliest_start": "2026-10-01T09:30:00+00:00"
   },
-  "P3W5W2S": {
-    "uid": "P3W5W2S",
-    "name": "2. Donnerstag, 01.10.2026 - Nachmittag",
-    "date": "2026-10-01",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-10-01T13:15:00+00:00",
-        "end": "2026-10-01T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-01T13:15:00+00:00"
-  },
   "G29ETMZ": {
     "uid": "G29ETMZ",
     "name": "2. Freitag, 02.10.2026 - Mittag",
@@ -1365,12 +1309,6 @@
       {
         "id": 88,
         "label": "Münchner Kindl Boxe",
-        "start": "2026-10-04T08:30:00+00:00",
-        "end": "2026-10-04T12:15:00+00:00"
-      },
-      {
-        "id": 92,
-        "label": "Traditionsboxe",
         "start": "2026-10-04T08:30:00+00:00",
         "end": "2026-10-04T12:15:00+00:00"
       },
