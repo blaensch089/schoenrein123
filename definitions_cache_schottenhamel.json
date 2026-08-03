@@ -19,12 +19,6 @@
         "end": "2026-09-20T12:30:00+00:00"
       },
       {
-        "id": 89,
-        "label": "Brauerei Boxe",
-        "start": "2026-09-20T08:30:00+00:00",
-        "end": "2026-09-20T12:15:00+00:00"
-      },
-      {
         "id": 88,
         "label": "Münchner Kindl Boxe",
         "start": "2026-09-20T08:30:00+00:00",
@@ -613,22 +607,6 @@
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
   },
-  "9836RXV": {
-    "uid": "9836RXV",
-    "name": "1. Donnerstag, 24.09.2026 - Nachmittag",
-    "date": "2026-09-24",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-09-24T13:15:00+00:00",
-        "end": "2026-09-24T16:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-24T13:15:00+00:00"
-  },
   "YQKXBK1": {
     "uid": "YQKXBK1",
     "name": "1. Freitag, 25.09.2026 - Mittag",
@@ -636,12 +614,6 @@
     "shift_label": "Mittag",
     "shift_id": 19,
     "areas": [
-      {
-        "id": 87,
-        "label": "Halle Süd/Mitte",
-        "start": "2026-09-25T09:00:00+00:00",
-        "end": "2026-09-25T13:00:00+00:00"
-      },
       {
         "id": 90,
         "label": "Hausboxe",
@@ -657,12 +629,6 @@
       {
         "id": 88,
         "label": "Münchner Kindl Boxe",
-        "start": "2026-09-25T08:30:00+00:00",
-        "end": "2026-09-25T12:15:00+00:00"
-      },
-      {
-        "id": 92,
-        "label": "Traditionsboxe",
         "start": "2026-09-25T08:30:00+00:00",
         "end": "2026-09-25T12:15:00+00:00"
       },
@@ -1237,12 +1203,6 @@
     "shift_id": 20,
     "areas": [
       {
-        "id": 94,
-        "label": "Bavaria Boxe",
-        "start": "2026-10-01T13:15:00+00:00",
-        "end": "2026-10-01T16:30:00+00:00"
-      },
-      {
         "id": 99,
         "label": "Galerie",
         "start": "2026-10-01T13:15:00+00:00",
@@ -1344,22 +1304,6 @@
       }
     ],
     "earliest_start": "2026-10-02T08:30:00+00:00"
-  },
-  "KW2R69W": {
-    "uid": "KW2R69W",
-    "name": "3. Samstag, 03.10.2026 - Mittag",
-    "date": "2026-10-03",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-10-03T08:00:00+00:00",
-        "end": "2026-10-03T11:45:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-03T08:00:00+00:00"
   },
   "PV38RS8": {
     "uid": "PV38RS8",
