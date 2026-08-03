@@ -106,8 +106,11 @@ def _extract_areas(html_frag):
 
 
 def _shift_times(shift_name):
-    """Default-Zeiten je Schicht. 'mittag' → 12:00–16:45, sonst → 17:00–22:30."""
-    if "mittag" in shift_name.lower():
+    """Default-Zeiten je Schicht. 'schoppen' → 09:00–11:30 (Frühschoppen, wird nicht gepusht), 'mittag' → 12:00–16:45, sonst → 17:00–22:30."""
+    name = shift_name.lower()
+    if "schoppen" in name:
+        return "09:00", "11:30"
+    if "mittag" in name:
         return _MITTAG_START, _MITTAG_END
     return _ABEND_START, _ABEND_END
 
