@@ -883,28 +883,6 @@
     ],
     "earliest_start": "2026-10-02T09:00:00+00:00"
   },
-  "AS5XUX1": {
-    "uid": "AS5XUX1",
-    "name": "2. Freitag, 02.10.2026 - Nachmittag",
-    "date": "2026-10-02",
-    "shift_label": "Nachmittag",
-    "shift_id": 23,
-    "areas": [
-      {
-        "id": 303,
-        "label": "Galerie",
-        "start": "2026-10-02T12:30:00+00:00",
-        "end": "2026-10-02T15:30:00+00:00"
-      },
-      {
-        "id": 301,
-        "label": "Galerie",
-        "start": "2026-10-02T12:30:00+00:00",
-        "end": "2026-10-02T15:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-10-02T12:30:00+00:00"
-  },
   "FS9AHUS": {
     "uid": "FS9AHUS",
     "name": "3. Sonntag, 04.10.2026 - Mittag",
