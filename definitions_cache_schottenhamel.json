@@ -1,20 +1,4 @@
 {
-  "ASAGWCE": {
-    "uid": "ASAGWCE",
-    "name": "1. Sonntag, 20.09.2026 - Mittag",
-    "date": "2026-09-20",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-20T08:30:00+00:00",
-        "end": "2026-09-20T12:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-20T08:30:00+00:00"
-  },
   "NXUZF4B": {
     "uid": "NXUZF4B",
     "name": "1. Montag, 21.09.2026 - Mittag",
@@ -515,50 +499,6 @@
     ],
     "earliest_start": "2026-09-25T08:30:00+00:00"
   },
-  "MFLBTDD": {
-    "uid": "MFLBTDD",
-    "name": "2. Samstag, 26.09.2026 - Mittag",
-    "date": "2026-09-26",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 93,
-        "label": "Anstich Boxe",
-        "start": "2026-09-26T08:00:00+00:00",
-        "end": "2026-09-26T11:45:00+00:00"
-      },
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-26T08:00:00+00:00",
-        "end": "2026-09-26T11:45:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-26T08:00:00+00:00"
-  },
-  "LCP4KC4": {
-    "uid": "LCP4KC4",
-    "name": "2. Sonntag, 27.09.2026 - Mittag",
-    "date": "2026-09-27",
-    "shift_label": "Mittag",
-    "shift_id": 19,
-    "areas": [
-      {
-        "id": 91,
-        "label": "Hallenboxe",
-        "start": "2026-09-27T09:00:00+00:00",
-        "end": "2026-09-27T13:30:00+00:00"
-      },
-      {
-        "id": 100,
-        "label": "Halle Nord",
-        "start": "2026-09-27T09:00:00+00:00",
-        "end": "2026-09-27T13:00:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-27T09:00:00+00:00"
-  },
   "MPPWW6M": {
     "uid": "MPPWW6M",
     "name": "2. Montag, 28.09.2026 - Mittag",
@@ -798,22 +738,6 @@
       }
     ],
     "earliest_start": "2026-09-29T09:30:00+00:00"
-  },
-  "ZLT6U6K": {
-    "uid": "ZLT6U6K",
-    "name": "2. Dienstag, 29.09.2026 - Nachmittag",
-    "date": "2026-09-29",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 99,
-        "label": "Galerie",
-        "start": "2026-09-29T13:15:00+00:00",
-        "end": "2026-09-29T16:30:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-29T13:15:00+00:00"
   },
   "PCE2351": {
     "uid": "PCE2351",
