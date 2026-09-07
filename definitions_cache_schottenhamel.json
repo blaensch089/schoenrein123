@@ -585,12 +585,6 @@
         "label": "Balkon",
         "start": "2026-09-28T13:15:00+00:00",
         "end": "2026-09-28T16:15:00+00:00"
-      },
-      {
-        "id": 88,
-        "label": "Münchner Kindl Boxe",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
       }
     ],
     "earliest_start": "2026-09-28T13:15:00+00:00"
@@ -900,5 +894,21 @@
       }
     ],
     "earliest_start": "2026-10-02T08:30:00+00:00"
+  },
+  "PV38RS8": {
+    "uid": "PV38RS8",
+    "name": "3. Sonntag, 04.10.2026 - Mittag",
+    "date": "2026-10-04",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 95,
+        "label": "Prinzregenten Boxe",
+        "start": "2026-10-04T08:30:00+00:00",
+        "end": "2026-10-04T12:15:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-10-04T08:30:00+00:00"
   }
 }
