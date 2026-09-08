@@ -141,6 +141,12 @@
         "label": "Traditionsboxe",
         "start": "2026-09-21T13:00:00+00:00",
         "end": "2026-09-21T16:15:00+00:00"
+      },
+      {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-21T13:00:00+00:00",
+        "end": "2026-09-21T16:15:00+00:00"
       }
     ],
     "earliest_start": "2026-09-21T13:00:00+00:00"
@@ -263,6 +269,12 @@
         "label": "Balkon",
         "start": "2026-09-22T13:15:00+00:00",
         "end": "2026-09-22T16:15:00+00:00"
+      },
+      {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-22T13:00:00+00:00",
+        "end": "2026-09-22T16:15:00+00:00"
       }
     ],
     "earliest_start": "2026-09-22T13:00:00+00:00"
@@ -367,6 +379,22 @@
     ],
     "earliest_start": "2026-09-23T09:30:00+00:00"
   },
+  "GGFESMA": {
+    "uid": "GGFESMA",
+    "name": "1. Mittwoch, 23.09.2026 - Nachmittag",
+    "date": "2026-09-23",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-23T13:00:00+00:00",
+        "end": "2026-09-23T16:15:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-23T13:00:00+00:00"
+  },
   "9GCH6GZ": {
     "uid": "9GCH6GZ",
     "name": "1. Donnerstag, 24.09.2026 - Mittag",
@@ -466,6 +494,40 @@
       }
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
+  },
+  "9836RXV": {
+    "uid": "9836RXV",
+    "name": "1. Donnerstag, 24.09.2026 - Nachmittag",
+    "date": "2026-09-24",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 95,
+        "label": "Prinzregenten Boxe",
+        "start": "2026-09-24T13:00:00+00:00",
+        "end": "2026-09-24T16:15:00+00:00"
+      },
+      {
+        "id": 99,
+        "label": "Galerie",
+        "start": "2026-09-24T13:15:00+00:00",
+        "end": "2026-09-24T16:30:00+00:00"
+      },
+      {
+        "id": 92,
+        "label": "Traditionsboxe",
+        "start": "2026-09-24T13:00:00+00:00",
+        "end": "2026-09-24T16:15:00+00:00"
+      },
+      {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-24T13:00:00+00:00",
+        "end": "2026-09-24T16:15:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-24T13:00:00+00:00"
   },
   "MPPWW6M": {
     "uid": "MPPWW6M",
@@ -575,6 +637,12 @@
     "shift_id": 20,
     "areas": [
       {
+        "id": 95,
+        "label": "Prinzregenten Boxe",
+        "start": "2026-09-28T13:00:00+00:00",
+        "end": "2026-09-28T16:15:00+00:00"
+      },
+      {
         "id": 99,
         "label": "Galerie",
         "start": "2026-09-28T13:15:00+00:00",
@@ -585,9 +653,15 @@
         "label": "Balkon",
         "start": "2026-09-28T13:15:00+00:00",
         "end": "2026-09-28T16:15:00+00:00"
+      },
+      {
+        "id": 93,
+        "label": "Anstich Boxe",
+        "start": "2026-09-28T13:00:00+00:00",
+        "end": "2026-09-28T16:15:00+00:00"
       }
     ],
-    "earliest_start": "2026-09-28T13:15:00+00:00"
+    "earliest_start": "2026-09-28T13:00:00+00:00"
   },
   "H485MY6": {
     "uid": "H485MY6",
@@ -765,8 +839,8 @@
     "shift_id": 20,
     "areas": [
       {
-        "id": 97,
-        "label": "Viktualienboxe",
+        "id": 93,
+        "label": "Anstich Boxe",
         "start": "2026-09-30T13:00:00+00:00",
         "end": "2026-09-30T16:15:00+00:00"
       }
@@ -869,10 +943,10 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 90,
-        "label": "Hausboxe",
-        "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T12:30:00+00:00"
+        "id": 96,
+        "label": "Wirtsbuden Boxe",
+        "start": "2026-10-02T08:30:00+00:00",
+        "end": "2026-10-02T12:15:00+00:00"
       },
       {
         "id": 98,
@@ -903,8 +977,8 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 95,
-        "label": "Prinzregenten Boxe",
+        "id": 98,
+        "label": "Balkon",
         "start": "2026-10-04T08:30:00+00:00",
         "end": "2026-10-04T12:15:00+00:00"
       }
