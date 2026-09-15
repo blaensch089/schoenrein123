@@ -433,6 +433,38 @@
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
   },
+  "LCP4KC4": {
+    "uid": "LCP4KC4",
+    "name": "2. Sonntag, 27.09.2026 - Mittag",
+    "date": "2026-09-27",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 100,
+        "label": "Halle Nord",
+        "start": "2026-09-27T09:00:00+00:00",
+        "end": "2026-09-27T13:00:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-27T09:00:00+00:00"
+  },
+  "TVL5BX3": {
+    "uid": "TVL5BX3",
+    "name": "2. Sonntag, 27.09.2026 - Nachmittag",
+    "date": "2026-09-27",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [
+      {
+        "id": 88,
+        "label": "Münchner Kindl Boxe",
+        "start": "2026-09-27T12:45:00+00:00",
+        "end": "2026-09-27T16:00:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-27T12:45:00+00:00"
+  },
   "MPPWW6M": {
     "uid": "MPPWW6M",
     "name": "2. Montag, 28.09.2026 - Mittag",
@@ -532,22 +564,6 @@
       }
     ],
     "earliest_start": "2026-09-28T09:30:00+00:00"
-  },
-  "F4DPXZF": {
-    "uid": "F4DPXZF",
-    "name": "2. Montag, 28.09.2026 - Nachmittag",
-    "date": "2026-09-28",
-    "shift_label": "Nachmittag",
-    "shift_id": 20,
-    "areas": [
-      {
-        "id": 98,
-        "label": "Balkon",
-        "start": "2026-09-28T13:15:00+00:00",
-        "end": "2026-09-28T16:15:00+00:00"
-      }
-    ],
-    "earliest_start": "2026-09-28T13:15:00+00:00"
   },
   "H485MY6": {
     "uid": "H485MY6",
@@ -791,10 +807,10 @@
     "shift_id": 19,
     "areas": [
       {
-        "id": 99,
-        "label": "Galerie",
+        "id": 87,
+        "label": "Halle Süd/Mitte",
         "start": "2026-10-02T09:00:00+00:00",
-        "end": "2026-10-02T12:30:00+00:00"
+        "end": "2026-10-02T13:00:00+00:00"
       }
     ],
     "earliest_start": "2026-10-02T09:00:00+00:00"
