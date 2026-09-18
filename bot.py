@@ -15,6 +15,7 @@ import requests
 import braeurosl
 import hacker
 import armbrustschuetzen
+import armbrust_spontan
 import winzerer
 import loewenbraeu
 import ochsenbraterei
@@ -112,6 +113,12 @@ TENTS = [
         "booking_url": "https://reservierung.armbrustschuetzenzelt.de/reservierung",
     },
     {
+        "id":          "armbrust_spontan",
+        "type":        "armbrust_spontan",
+        "name":        "Armbrustschützenzelt Spontan",
+        "booking_url": "https://servus.armbrustschuetzenzelt.de/reservierung",
+    },
+    {
         "id":          "winzerer",
         "type":        "livewire_winzerer",
         "name":        "Winzerer Fähndl",
@@ -144,6 +151,7 @@ LIVEWIRE_CHECKERS = {
     "livewire_braeurosl":         braeurosl.check_braeurosl,
     "livewire_hacker":            hacker.check_hacker,
     "livewire_armbrustschuetzen": armbrustschuetzen.check_armbrustschuetzen,
+    "armbrust_spontan":           armbrust_spontan.check_armbrust_spontan,
     "livewire_winzerer":          winzerer.check_winzerer,
     "livewire_loewenbraeu":       loewenbraeu.check_loewenbraeu,
     "livewire_ochsenbraterei":    ochsenbraterei.check_ochsenbraterei,
