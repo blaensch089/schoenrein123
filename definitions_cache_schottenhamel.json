@@ -627,6 +627,15 @@
     ],
     "earliest_start": "2026-09-29T09:30:00+00:00"
   },
+  "ZLT6U6K": {
+    "uid": "ZLT6U6K",
+    "name": "2. Dienstag, 29.09.2026 - Nachmittag",
+    "date": "2026-09-29",
+    "shift_label": "Nachmittag",
+    "shift_id": 20,
+    "areas": [],
+    "earliest_start": null
+  },
   "PCE2351": {
     "uid": "PCE2351",
     "name": "2. Mittwoch, 30.09.2026 - Mittag",
