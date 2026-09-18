@@ -117,6 +117,7 @@ TENTS = [
         "type":        "livewire_armbrust_spontan",
         "name":        "Armbrustschützenzelt Spontan",
         "booking_url": "https://servus.armbrustschuetzenzelt.de/reservierung",
+        "push_all":    True,
     },
     {
         "id":          "winzerer",
@@ -320,9 +321,12 @@ def format_push(cached, clf, tent):
             area_lines.append(f"  • {a['label']}")
     areas_text = "\n".join(area_lines) or "  (keine Bereichsdaten)"
 
-    header = ("🌙 <b>ABENDSCHICHT VERFÜGBAR!</b>"
-              if clf == "evening"
-              else "🕓 <b>Nachmittag-Schicht frei (Fr/Sa/So)</b>")
+    if clf == "evening":
+        header = "🌙 <b>ABENDSCHICHT VERFÜGBAR!</b>"
+    elif clf is None:
+        header = "⚡ <b>SPONTAN-SLOT FREI</b>"
+    else:
+        header = "🕓 <b>Nachmittag-Schicht frei (Fr/Sa/So)</b>"
 
     return (
         f"{header}\n\n"
@@ -423,8 +427,8 @@ def run_check(tent, current, last_uids, cache, *, first_run=False):
                 telegram_send(format_unknown_push(uid, tent))
                 continue
             clf = classify(cached.get("earliest_start"))
-            if clf:
-                print(f"  → Push [{clf}]: {cached['name']}")
+            if clf or tent.get("push_all"):
+                print(f"  → Push [{clf or 'push_all'}]: {cached['name']}")
                 telegram_send(format_push(cached, clf, tent))
             else:
                 dt = to_munich(cached.get("earliest_start"))
