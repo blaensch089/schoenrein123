@@ -415,6 +415,22 @@
     ],
     "earliest_start": "2026-09-24T09:30:00+00:00"
   },
+  "YQKXBK1": {
+    "uid": "YQKXBK1",
+    "name": "1. Freitag, 25.09.2026 - Mittag",
+    "date": "2026-09-25",
+    "shift_label": "Mittag",
+    "shift_id": 19,
+    "areas": [
+      {
+        "id": 87,
+        "label": "Halle Süd/Mitte",
+        "start": "2026-09-25T09:00:00+00:00",
+        "end": "2026-09-25T13:00:00+00:00"
+      }
+    ],
+    "earliest_start": "2026-09-25T09:00:00+00:00"
+  },
   "MPPWW6M": {
     "uid": "MPPWW6M",
     "name": "2. Montag, 28.09.2026 - Mittag",
